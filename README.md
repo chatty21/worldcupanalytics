@@ -4,7 +4,7 @@ An interactive World Cup analytics dashboard exploring tournament audience trend
 
 ## Live Project
 
-- Live demo: `Add your Vercel link here`
+- Live demo: `https://worldcupanalytics.vercel.app/`
 - GitHub repo: `https://github.com/chatty21/worldcupanalytics`
 
 ## Overview
