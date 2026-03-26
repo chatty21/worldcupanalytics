@@ -1,0 +1,434 @@
+{
+  "Argentina": {
+    "flag": "🇦🇷",
+    "player": "Lionel Messi",
+    "role": "Forward / creator",
+    "club": "Inter Miami",
+    "status": "Managed minutes, still expected in marquee windows",
+    "availability": "Watch",
+    "form_score": 92,
+    "watch_score": 99,
+    "wikipedia_title": "Lionel_Messi",
+    "headline": "Still the single biggest audience magnet in the squad.",
+    "recent_form": "Even with workload management, Messi remains Argentina's central attention driver in premium fixtures.",
+    "details": [
+      "High-value set-piece and final-ball threat",
+      "Defending champion spotlight keeps his matches premium",
+      "Availability is the main variable, not quality"
+    ]
+  },
+  "Australia": {
+    "flag": "🇦🇺",
+    "player": "Jackson Irvine",
+    "role": "Midfield leader",
+    "club": "St. Pauli",
+    "status": "Expected starter",
+    "availability": "High",
+    "form_score": 79,
+    "watch_score": 72,
+    "wikipedia_title": "Jackson_Irvine",
+    "headline": "Australia's most bankable current midfield reference point.",
+    "recent_form": "Irvine's consistency and box-to-box output make him the safest player-to-watch call for Australia.",
+    "details": [
+      "Reliable transition presence",
+      "Leadership role lifts his visibility",
+      "More influential than headline-famous"
+    ]
+  },
+  "Austria": {
+    "flag": "🇦🇹",
+    "player": "David Alaba",
+    "role": "Defensive leader",
+    "club": "Real Madrid",
+    "status": "Fitness watched closely",
+    "availability": "Watch",
+    "form_score": 78,
+    "watch_score": 74,
+    "wikipedia_title": "David_Alaba",
+    "headline": "Still Austria's clearest global-name pull when available.",
+    "recent_form": "Alaba's leadership and profile keep him the key watchpoint even when availability needs monitoring.",
+    "details": [
+      "Big-match reputation raises viewer interest",
+      "Defensive organizer and ball-progressor",
+      "Health status materially affects the team's ceiling"
+    ]
+  },
+  "Belgium": {
+    "flag": "🇧🇪",
+    "player": "Kevin De Bruyne",
+    "role": "Playmaker",
+    "club": "Manchester City",
+    "status": "Availability monitored",
+    "availability": "Watch",
+    "form_score": 84,
+    "watch_score": 88,
+    "wikipedia_title": "Kevin_De_Bruyne",
+    "headline": "Belgium's premium audience pull still starts with De Bruyne.",
+    "recent_form": "His passing range and star recognition still define Belgium's high-end broadcast appeal.",
+    "details": [
+      "Elite chance-creation value",
+      "Recognizable global superstar",
+      "Physical management remains a key storyline"
+    ]
+  },
+  "Brazil": {
+    "flag": "🇧🇷",
+    "player": "Vinicius Junior",
+    "role": "Left winger",
+    "club": "Real Madrid",
+    "status": "Expected starter",
+    "availability": "High",
+    "form_score": 90,
+    "watch_score": 96,
+    "wikipedia_title": "Vin%C3%ADcius_J%C3%BAnior",
+    "headline": "Brazil's most explosive current one-v-one threat.",
+    "recent_form": "Vinicius brings the clearest combination of form, star power and highlight probability in this Brazil side.",
+    "details": [
+      "Elite dribbling and transition threat",
+      "Huge crossover appeal beyond Brazil fans",
+      "A major driver of marquee-match upside"
+    ]
+  },
+  "Canada": {
+    "flag": "🇨🇦",
+    "player": "Alphonso Davies",
+    "role": "Wide defender / attacker",
+    "club": "Bayern Munich",
+    "status": "Expected starter",
+    "availability": "High",
+    "form_score": 81,
+    "watch_score": 86,
+    "wikipedia_title": "Alphonso_Davies",
+    "headline": "Canada's biggest pace-and-profile draw.",
+    "recent_form": "Davies remains the face of Canada's tournament potential and the player most likely to turn host fixtures into global highlights.",
+    "details": [
+      "Explosive recovery and carry speed",
+      "Host-country visibility multiplier",
+      "Biggest single-name driver for Canada"
+    ]
+  },
+  "Colombia": {
+    "flag": "🇨🇴",
+    "player": "Luis Diaz",
+    "role": "Winger",
+    "club": "Liverpool",
+    "status": "Expected starter",
+    "availability": "High",
+    "form_score": 88,
+    "watch_score": 87,
+    "wikipedia_title": "Luis_D%C3%ADaz_(footballer,_born_1997)",
+    "headline": "Colombia's most dynamic global-facing attacker.",
+    "recent_form": "Diaz's directness and club visibility make him Colombia's strongest player-to-watch call right now.",
+    "details": [
+      "Strong one-v-one and transition threat",
+      "Large diaspora audience recognition",
+      "Form keeps Colombia in the premium middle tier"
+    ]
+  },
+  "Croatia": {
+    "flag": "🇭🇷",
+    "player": "Luka Modric",
+    "role": "Midfield controller",
+    "club": "Real Madrid",
+    "status": "Managed but highly likely for big matches",
+    "availability": "Watch",
+    "form_score": 84,
+    "watch_score": 84,
+    "wikipedia_title": "Luka_Modri%C4%87",
+    "headline": "The emotional and tactical center of Croatia's big-stage identity.",
+    "recent_form": "Modric still defines Croatia's viewing appeal because every late-round match carries legacy weight around him.",
+    "details": [
+      "Massive tournament credibility",
+      "Legacy factor raises neutral interest",
+      "Workload management is the only major caveat"
+    ]
+  },
+  "Ecuador": {
+    "flag": "🇪🇨",
+    "player": "Moises Caicedo",
+    "role": "Central midfielder",
+    "club": "Chelsea",
+    "status": "Expected starter",
+    "availability": "High",
+    "form_score": 80,
+    "watch_score": 78,
+    "wikipedia_title": "Mois%C3%A9s_Caicedo",
+    "headline": "Ecuador's clearest current elite-club reference point.",
+    "recent_form": "Caicedo gives Ecuador a modern midfield focal point with stronger international recognition than most peers.",
+    "details": [
+      "Ball-winning and progression mix",
+      "Premier League visibility helps audience pull",
+      "Emerging-star profile lifts matchup curiosity"
+    ]
+  },
+  "England": {
+    "flag": "🇬🇧",
+    "player": "Jude Bellingham",
+    "role": "Midfielder",
+    "club": "Real Madrid",
+    "status": "Expected starter",
+    "availability": "High",
+    "form_score": 91,
+    "watch_score": 95,
+    "wikipedia_title": "Jude_Bellingham",
+    "headline": "England's biggest current crossover star.",
+    "recent_form": "Bellingham combines elite-level output, youth-star magnetism and strong neutral appeal better than anyone else in the squad.",
+    "details": [
+      "Premier big-game profile",
+      "Drives both quality and attention",
+      "One of the strongest non-host TV magnets"
+    ]
+  },
+  "France": {
+    "flag": "🇫🇷",
+    "player": "Kylian Mbappe",
+    "role": "Forward",
+    "club": "Real Madrid",
+    "status": "Expected starter",
+    "availability": "High",
+    "form_score": 93,
+    "watch_score": 99,
+    "wikipedia_title": "Kylian_Mbapp%C3%A9",
+    "headline": "France's clear No. 1 appointment-viewing figure.",
+    "recent_form": "Mbappe remains one of the few players who can shift a match from premium to must-watch almost by himself.",
+    "details": [
+      "World-class finishing and burst",
+      "Huge global name-recognition",
+      "Top-tier knockout-round audience lift"
+    ]
+  },
+  "Germany": {
+    "flag": "🇩🇪",
+    "player": "Jamal Musiala",
+    "role": "Attacking midfielder",
+    "club": "Bayern Munich",
+    "status": "Expected starter",
+    "availability": "High",
+    "form_score": 90,
+    "watch_score": 93,
+    "wikipedia_title": "Jamal_Musiala",
+    "headline": "Germany's most electric current attacking talent.",
+    "recent_form": "Musiala now carries more upside as a pure player-to-watch than any other Germany starter.",
+    "details": [
+      "Elite close-control and unpredictability",
+      "High-value young-star profile",
+      "Major contributor to Germany's premium ceiling"
+    ]
+  },
+  "Japan": {
+    "flag": "🇯🇵",
+    "player": "Takefusa Kubo",
+    "role": "Attacking winger",
+    "club": "Real Sociedad",
+    "status": "Expected starter",
+    "availability": "High",
+    "form_score": 84,
+    "watch_score": 82,
+    "wikipedia_title": "Takefusa_Kubo",
+    "headline": "Japan's clearest flair-and-creation focal point.",
+    "recent_form": "Kubo gives Japan the strongest blend of technical excitement and global recognizability in the current cycle.",
+    "details": [
+      "Creative final-third threat",
+      "Strong appeal in neutral matches",
+      "A clean stylistic fit for player-to-watch billing"
+    ]
+  },
+  "Mexico": {
+    "flag": "🇲🇽",
+    "player": "Santiago Gimenez",
+    "role": "Striker",
+    "club": "AC Milan",
+    "status": "Expected starter",
+    "availability": "High",
+    "form_score": 83,
+    "watch_score": 84,
+    "wikipedia_title": "Santiago_Gim%C3%A9nez",
+    "headline": "Mexico's most obvious current finishing focal point.",
+    "recent_form": "Gimenez adds a modern scorer profile to Mexico's already massive baseline audience value.",
+    "details": [
+      "Penalty-box presence and finishing",
+      "Boosts opener and host-match intrigue",
+      "Fits the premium Spanish-language window story"
+    ]
+  },
+  "Morocco": {
+    "flag": "🇲🇦",
+    "player": "Achraf Hakimi",
+    "role": "Right-back / runner",
+    "club": "Paris Saint-Germain",
+    "status": "Expected starter",
+    "availability": "High",
+    "form_score": 89,
+    "watch_score": 86,
+    "wikipedia_title": "Achraf_Hakimi",
+    "headline": "Morocco's strongest current blend of form and star familiarity.",
+    "recent_form": "Hakimi remains the cleanest single-player symbol of Morocco's post-2022 relevance.",
+    "details": [
+      "Repeated two-way high-impact actions",
+      "Recognizable club and country profile",
+      "Helps Morocco hold premium-viewer relevance"
+    ]
+  },
+  "Netherlands": {
+    "flag": "🇳🇱",
+    "player": "Xavi Simons",
+    "role": "Attacking midfielder",
+    "club": "RB Leipzig",
+    "status": "Expected starter",
+    "availability": "High",
+    "form_score": 87,
+    "watch_score": 85,
+    "wikipedia_title": "Xavi_Simons",
+    "headline": "The Netherlands' most exciting current attacking watch.",
+    "recent_form": "Simons brings the freshest star-energy to a historically premium Dutch brand.",
+    "details": [
+      "Creative acceleration in transition",
+      "Youth-star appeal",
+      "Adds extra curiosity in neutral fixtures"
+    ]
+  },
+  "Paraguay": {
+    "flag": "🇵🇾",
+    "player": "Julio Enciso",
+    "role": "Forward / attacker",
+    "club": "Brighton & Hove Albion",
+    "status": "Expected starter",
+    "availability": "High",
+    "form_score": 75,
+    "watch_score": 73,
+    "wikipedia_title": "Julio_Enciso",
+    "headline": "Paraguay's highest-upside attacking name.",
+    "recent_form": "Enciso is the clearest breakout-watch option in a side whose audience pull usually comes from the opponent.",
+    "details": [
+      "Young attacking upside",
+      "Premier League familiarity helps",
+      "Useful underdog-spotlight figure"
+    ]
+  },
+  "Portugal": {
+    "flag": "🇵🇹",
+    "player": "Cristiano Ronaldo",
+    "role": "Forward",
+    "club": "Al Nassr",
+    "status": "Expected in marquee matches, minutes managed",
+    "availability": "Watch",
+    "form_score": 84,
+    "watch_score": 98,
+    "wikipedia_title": "Cristiano_Ronaldo",
+    "headline": "No player in the squad changes raw attention more than Ronaldo.",
+    "recent_form": "Even with age-related management, Ronaldo remains Portugal's biggest audience multiplier.",
+    "details": [
+      "Unmatched global-name value",
+      "Availability affects upside more than baseline",
+      "Still the biggest player-to-watch draw"
+    ]
+  },
+  "Senegal": {
+    "flag": "🇸🇳",
+    "player": "Sadio Mane",
+    "role": "Forward",
+    "club": "Al Nassr",
+    "status": "Expected starter",
+    "availability": "High",
+    "form_score": 82,
+    "watch_score": 80,
+    "wikipedia_title": "Sadio_Man%C3%A9",
+    "headline": "Senegal's biggest star and broadest-recognition player.",
+    "recent_form": "Mane remains the strongest player-to-watch hook for Senegal in global-facing matches.",
+    "details": [
+      "Carries the team's biggest name value",
+      "Strong finishing and transition threat",
+      "Important for crossover audience interest"
+    ]
+  },
+  "South Africa": {
+    "flag": "🇿🇦",
+    "player": "Percy Tau",
+    "role": "Forward",
+    "club": "Qatar SC",
+    "status": "Expected starter",
+    "availability": "High",
+    "form_score": 71,
+    "watch_score": 68,
+    "wikipedia_title": "Percy_Tau",
+    "headline": "South Africa's most recognizable attacking outlet.",
+    "recent_form": "Tau remains the easiest single-player reference point when South Africa appears in modeled fixtures.",
+    "details": [
+      "Most familiar international attacking name",
+      "Useful opener-storyline figure",
+      "Context matters more than pure star gravity"
+    ]
+  },
+  "South Korea": {
+    "flag": "🇰🇷",
+    "player": "Son Heung-min",
+    "role": "Forward",
+    "club": "Tottenham Hotspur",
+    "status": "Fitness watched, still premium if available",
+    "availability": "Watch",
+    "form_score": 81,
+    "watch_score": 92,
+    "wikipedia_title": "Son_Heung-min",
+    "headline": "South Korea's audience value rises sharply when Son is central.",
+    "recent_form": "Son remains one of Asia's few truly global football stars, making his availability crucial to the model.",
+    "details": [
+      "Huge pan-regional recognition",
+      "Star availability changes match ceiling",
+      "Still the clearest player-to-watch figure"
+    ]
+  },
+  "Spain": {
+    "flag": "🇪🇸",
+    "player": "Lamine Yamal",
+    "role": "Winger",
+    "club": "Barcelona",
+    "status": "Expected starter",
+    "availability": "High",
+    "form_score": 95,
+    "watch_score": 97,
+    "wikipedia_title": "Lamine_Yamal",
+    "headline": "Spain's breakout superstar and current attention engine.",
+    "recent_form": "Yamal's production and buzz make him the most exciting player-to-watch pick in the tournament model.",
+    "details": [
+      "Explosive one-v-one threat",
+      "Youth-superstar narrative drives neutral interest",
+      "Massive influence on Spain's current TV pull"
+    ]
+  },
+  "United States": {
+    "flag": "🇺🇸",
+    "player": "Christian Pulisic",
+    "role": "Forward / winger",
+    "club": "AC Milan",
+    "status": "Expected starter",
+    "availability": "High",
+    "form_score": 87,
+    "watch_score": 88,
+    "wikipedia_title": "Christian_Pulisic",
+    "headline": "The clearest face of the U.S. host-market story.",
+    "recent_form": "Pulisic remains the central attacking reference for the U.S. and the biggest individual draw for English-language windows.",
+    "details": [
+      "Host-market recognition multiplier",
+      "Final-third output drives the attack",
+      "Core figure in U.S. premium inventory matches"
+    ]
+  },
+  "Uruguay": {
+    "flag": "🇺🇾",
+    "player": "Federico Valverde",
+    "role": "Midfielder",
+    "club": "Real Madrid",
+    "status": "Expected starter",
+    "availability": "High",
+    "form_score": 88,
+    "watch_score": 86,
+    "wikipedia_title": "Federico_Valverde",
+    "headline": "Uruguay's best two-way big-match driver.",
+    "recent_form": "Valverde gives Uruguay the strongest combination of recent level, club visibility and all-phase influence.",
+    "details": [
+      "Elite engine and strike threat",
+      "High big-match credibility",
+      "A stronger current watch than a pure-name veteran pick"
+    ]
+  }
+}

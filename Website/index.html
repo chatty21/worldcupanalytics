@@ -1,0 +1,4106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FIFA World Cup — Global Viewership Analytics 2010–2022</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Space+Mono:wght@400;700&family=Teko:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --pitch: #0d2f1b;
+    --pitch-light: #14663a;
+    --pitch-bright: #19a35a;
+    --turf-shadow: #07150e;
+    --gold: #ffd447;
+    --gold-dim: #b68914;
+    --white: #f5f1e8;
+    --muted: #9cb5a7;
+    --panel: rgba(6, 20, 13, 0.84);
+    --panel-strong: rgba(8, 28, 18, 0.92);
+    --border: rgba(255, 212, 71, 0.2);
+    --red: #ff5b4d;
+    --blue: #51c6ff;
+    --green: #52e08c;
+    --orange: #ff9a3d;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background:
+      radial-gradient(circle at top, rgba(25,163,90,0.22), transparent 30%),
+      radial-gradient(circle at 20% 20%, rgba(81,198,255,0.08), transparent 18%),
+      linear-gradient(180deg, #0b180f 0%, #09120d 24%, #07100b 100%);
+    color: var(--white);
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 500;
+    overflow-x: hidden;
+    position: relative;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 28px 28px;
+    opacity: .25;
+    pointer-events: none;
+    mask-image: linear-gradient(180deg, rgba(0,0,0,.9), rgba(0,0,0,.35));
+  }
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle at center, transparent 45%, rgba(0,0,0,.45) 100%);
+    pointer-events: none;
+  }
+
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: left;
+    overflow: hidden;
+    padding: 7rem 2rem 6.5rem;
+  }
+  .hero-shell {
+    width: min(1320px, 100%);
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) 360px;
+    gap: 1.5rem;
+    align-items: end;
+    position: relative;
+    z-index: 1;
+  }
+  .hero-main {
+    position: relative;
+    padding: 2rem 0 4rem;
+  }
+  .hero-aside {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-self: center;
+  }
+  .hero-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(circle at 50% 15%, rgba(255,212,71,0.16), transparent 22%),
+      radial-gradient(circle at 85% 20%, rgba(81,198,255,0.18), transparent 20%),
+      linear-gradient(180deg, rgba(20,102,58,.9) 0%, rgba(5,16,10,.92) 72%);
+  }
+  .pitch-lines {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(90deg, transparent 9%, rgba(255,255,255,0.08) 9.2%, transparent 9.4%, transparent 90.6%, rgba(255,255,255,0.08) 90.8%, transparent 91%),
+      linear-gradient(0deg, transparent 15%, rgba(255,255,255,0.08) 15.2%, transparent 15.4%, transparent 84.6%, rgba(255,255,255,0.08) 84.8%, transparent 85%),
+      radial-gradient(circle at 50% 50%, transparent 0 80px, rgba(255,255,255,0.08) 81px 83px, transparent 84px);
+    pointer-events: none;
+    opacity: .65;
+  }
+  .circle-glow {
+    position: absolute;
+    width: 560px; height: 560px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.08);
+    top: 56%; right: -80px;
+    transform: none;
+    box-shadow: 0 0 120px 36px rgba(25,163,90,0.22);
+    animation: pulse 4s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:.45;transform:scale(1)} 50%{opacity:.95;transform:scale(1.06)} }
+  @keyframes driftFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+  @keyframes glowSweep { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+  @keyframes softRotate { 0%{transform:rotate(0deg)} 50%{transform:rotate(2deg)} 100%{transform:rotate(0deg)} }
+  @keyframes numberPop { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
+  @keyframes mapPulse { 0%,100%{opacity:.18;transform:scale(1)} 50%{opacity:.42;transform:scale(1.22)} }
+  @keyframes mapReveal { from{opacity:0} to{opacity:1} }
+  @keyframes revealRise { from{opacity:0; transform:translateY(28px) scale(.98)} to{opacity:1; transform:translateY(0) scale(1)} }
+  @keyframes revealSlide { from{opacity:0; transform:translateX(-28px)} to{opacity:1; transform:translateX(0)} }
+  @keyframes cardTilt { 0%,100%{transform:perspective(700px) rotateX(0deg) rotateY(0deg)} 50%{transform:perspective(700px) rotateX(1.2deg) rotateY(-1.2deg)} }
+
+  .hero-kicker {
+    font-family: 'Space Mono', monospace;
+    font-size: .75rem;
+    letter-spacing: .3em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    position: relative;
+    opacity: 0;
+    animation: fadeUp .8s .2s forwards;
+    display: inline-flex;
+    align-items: center;
+    gap: .8rem;
+  }
+  .hero-kicker::before {
+    content: '';
+    width: 56px;
+    height: 2px;
+    background: linear-gradient(90deg, var(--gold), transparent);
+  }
+  .hero h1 {
+    font-family: 'Teko', sans-serif;
+    font-size: clamp(4.5rem, 13vw, 10rem);
+    line-height: .83;
+    letter-spacing: .03em;
+    color: var(--white);
+    position: relative;
+    opacity: 0;
+    animation: fadeUp .8s .4s forwards;
+    text-shadow: 0 10px 28px rgba(0,0,0,.4);
+  }
+  .hero h1::after {
+    content:'';
+    position:absolute;
+    inset:0;
+    background: linear-gradient(105deg, transparent 30%, rgba(255,255,255,.22) 50%, transparent 70%);
+    background-size: 220% 100%;
+    mix-blend-mode: screen;
+    opacity: .22;
+    animation: glowSweep 8s linear infinite;
+    pointer-events:none;
+  }
+  .hero h1 span {
+    color: transparent;
+    -webkit-text-stroke: 1px var(--gold);
+    text-shadow: none;
+  }
+  .hero-board {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: .75rem;
+    margin-bottom: 1.4rem;
+    padding: .8rem 1rem;
+    border-radius: 18px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.05));
+    border: 1px solid rgba(255,255,255,0.12);
+    box-shadow: 0 14px 30px rgba(0,0,0,.22);
+    animation: driftFloat 6s ease-in-out infinite;
+  }
+  .hero-board-label {
+    font-family: 'Space Mono', monospace;
+    font-size: .62rem;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: #dce6df;
+  }
+  .hero-board-score {
+    font-family: 'Teko', sans-serif;
+    font-size: 2.4rem;
+    line-height: .9;
+    color: var(--white);
+  }
+  .hero-board-divider {
+    width: 1px;
+    height: 38px;
+    background: rgba(255,255,255,.15);
+  }
+  .hero-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 52px;
+    padding: .38rem .6rem;
+    border-radius: 999px;
+    background: rgba(255,212,71,0.14);
+    border: 1px solid rgba(255,212,71,0.34);
+    color: var(--gold);
+    font-family: 'Space Mono', monospace;
+    font-size: .62rem;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+  }
+  .hero-sub {
+    font-size: 1.05rem;
+    color: #d6e2db;
+    max-width: 620px;
+    line-height: 1.45;
+    margin-top: 1rem;
+    position: relative;
+    opacity: 0;
+    animation: fadeUp .8s .6s forwards;
+    border-left: 3px solid rgba(255,212,71,0.4);
+    padding-left: 1rem;
+  }
+  .hero-stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(120px, 1fr));
+    gap: 1rem;
+    margin-top: 2.4rem;
+    position: relative;
+    opacity: 0;
+    animation: fadeUp .8s .8s forwards;
+    width: min(860px, 100%);
+  }
+  .hero-stat {
+    text-align: left;
+    padding: 1rem 1rem 1.1rem;
+    background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03);
+  }
+  .hero-spotlight {
+    position: relative;
+    padding: 1.15rem 1.15rem 1.2rem;
+    border-radius: 22px;
+    background:
+      linear-gradient(160deg, rgba(255,212,71,0.16), rgba(255,255,255,0.03) 42%),
+      rgba(4,18,11,.72);
+    border: 1px solid rgba(255,255,255,.1);
+    box-shadow: 0 18px 42px rgba(0,0,0,.25);
+    animation: cardTilt 9s ease-in-out infinite;
+  }
+  .hero-spotlight::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(81,198,255,.12), transparent 35%);
+    pointer-events: none;
+    border-radius: inherit;
+  }
+  .hero-spotlight-label {
+    font-family: 'Space Mono', monospace;
+    font-size: .62rem;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: #cde0d5;
+    margin-bottom: .45rem;
+  }
+  .hero-spotlight-title {
+    font-family: 'Teko', sans-serif;
+    font-size: 2.2rem;
+    line-height: .9;
+    letter-spacing: .03em;
+    color: var(--white);
+    margin-bottom: .35rem;
+  }
+  .hero-spotlight-copy {
+    font-size: .95rem;
+    line-height: 1.35;
+    color: #c1d0c7;
+  }
+  .hero-spotlight-metrics {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: .7rem;
+    margin-top: 1rem;
+  }
+  .hero-spotlight-metric {
+    padding: .7rem .8rem;
+    border-radius: 14px;
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.08);
+  }
+  .hero-spotlight-metric strong {
+    display: block;
+    font-family: 'Teko', sans-serif;
+    font-size: 1.6rem;
+    line-height: .95;
+    color: var(--gold);
+  }
+  .hero-spotlight-metric span {
+    display: block;
+    font-size: .72rem;
+    color: #d3ddd7;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+  .countdown-card {
+    margin-top: 1rem;
+    padding: .95rem 1rem 1rem;
+    border-radius: 18px;
+    background: linear-gradient(180deg, rgba(81,198,255,0.12), rgba(255,255,255,0.03));
+    border: 1px solid rgba(81,198,255,0.18);
+  }
+  .countdown-label {
+    font-family: 'Space Mono', monospace;
+    font-size: .58rem;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: #dce8e1;
+    margin-bottom: .7rem;
+  }
+  .countdown-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: .55rem;
+  }
+  .countdown-unit {
+    padding: .65rem .45rem;
+    border-radius: 14px;
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.08);
+    text-align: center;
+  }
+  .countdown-val {
+    display: block;
+    font-family: 'Teko', sans-serif;
+    font-size: 2rem;
+    line-height: .9;
+    color: var(--gold);
+    animation: numberPop 4s ease-in-out infinite;
+  }
+  .countdown-unit label {
+    display: block;
+    font-size: .62rem;
+    color: #d3ddd7;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+  }
+  .countdown-meta {
+    margin-top: .7rem;
+    font-size: .82rem;
+    color: #c4d3ca;
+    line-height: 1.35;
+  }
+  .hero-ticker {
+    width: min(1320px, 100%);
+    margin-top: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: .9rem 1rem;
+    border-radius: 18px;
+    background: rgba(5, 17, 11, .74);
+    border: 1px solid rgba(255,255,255,.08);
+    box-shadow: 0 14px 30px rgba(0,0,0,.22);
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+  }
+  .hero-ticker-label {
+    flex: 0 0 auto;
+    padding: .35rem .65rem;
+    border-radius: 999px;
+    background: var(--red);
+    color: white;
+    font-family: 'Space Mono', monospace;
+    font-size: .6rem;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+  }
+  .hero-ticker-track {
+    display: flex;
+    gap: 1.2rem;
+    flex-wrap: wrap;
+    color: #d7e1db;
+    font-size: .92rem;
+    animation: driftFloat 8s ease-in-out infinite;
+  }
+  .hero-ticker-item strong {
+    color: var(--gold);
+    font-weight: 700;
+  }
+  .hero-stat-num {
+    font-family: 'Teko', sans-serif;
+    font-size: 3rem;
+    color: var(--gold);
+    line-height: 1;
+  }
+  .hero-stat-label {
+    font-size: .72rem;
+    color: #d0ddd5;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    margin-top: .2rem;
+  }
+
+  .scroll-cue {
+    position: absolute;
+    bottom: 1.1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .5rem;
+    padding: .45rem .85rem;
+    border-radius: 999px;
+    background: rgba(5, 17, 11, 0.72);
+    border: 1px solid rgba(255,255,255,.08);
+    backdrop-filter: blur(8px);
+    font-family: 'Space Mono', monospace;
+    font-size: .65rem;
+    letter-spacing: .22em;
+    color: #d5dfd9;
+    animation: bob 2s ease-in-out infinite;
+    z-index: 2;
+    pointer-events: none;
+  }
+  .scroll-cue svg { opacity: .5; }
+  @keyframes bob { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(6px)} }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+
+  .container { max-width: 1320px; margin: 0 auto; padding: 0 2rem; position: relative; z-index: 1; }
+  section {
+    padding: 5rem 0;
+    position: relative;
+  }
+  section::before {
+    content: '';
+    position: absolute;
+    inset: 1.5rem 1rem;
+    border: 1px solid rgba(255,255,255,0.03);
+    border-radius: 28px;
+    pointer-events: none;
+  }
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: .7rem; letter-spacing: .28em; color: var(--gold); text-transform: uppercase;
+    margin-bottom: .8rem;
+  }
+  .section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  .section-head-copy { max-width: 760px; }
+  .section-badge {
+    flex: 0 0 auto;
+    padding: .9rem 1rem .8rem;
+    border-radius: 18px;
+    background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+    border: 1px solid rgba(255,255,255,.08);
+    min-width: 180px;
+  }
+  .section-badge-label {
+    font-family: 'Space Mono', monospace;
+    font-size: .58rem;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: #d0ddd4;
+  }
+  .section-badge-value {
+    font-family: 'Teko', sans-serif;
+    font-size: 2rem;
+    line-height: .95;
+    color: var(--gold);
+  }
+  .section-title {
+    font-family: 'Teko', sans-serif;
+    font-size: clamp(2.8rem, 6vw, 4.4rem);
+    letter-spacing: .04em;
+    line-height: .92;
+    margin-bottom: .5rem;
+  }
+  .section-desc {
+    color: #bed0c5;
+    font-size: 1rem;
+    line-height: 1.5;
+    max-width: 680px;
+  }
+
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    padding: .8rem 1.25rem;
+    background: linear-gradient(180deg, rgba(7,16,11,.96), rgba(7,16,11,.72));
+    backdrop-filter: blur(18px);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    display: flex; justify-content: space-between; align-items: center;
+    box-shadow: 0 12px 24px rgba(0,0,0,.18);
+    gap: 1rem;
+  }
+  .nav-logo {
+    font-family: 'Teko', sans-serif;
+    font-size: 1.55rem; letter-spacing: .07em; color: var(--white);
+    flex: 0 0 auto;
+  }
+  .nav-logo span { color: var(--gold); }
+  .nav-links {
+    display: flex;
+    gap: .55rem;
+    list-style: none;
+    flex: 1 1 auto;
+    justify-content: flex-end;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    white-space: nowrap;
+    padding-bottom: 2px;
+  }
+  .nav-links::-webkit-scrollbar { display: none; }
+  .nav-links li { flex: 0 0 auto; }
+  .nav-links a {
+    font-family: 'Space Mono', monospace;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 34px;
+    padding: .45rem .72rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,.06);
+    background: rgba(255,255,255,.025);
+    font-size: .58rem;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: #d2ddd6;
+    text-decoration: none;
+    transition: color .2s, opacity .2s, background .2s, border-color .2s;
+    opacity: .82;
+  }
+  .nav-links a:hover {
+    color: var(--gold);
+    opacity: 1;
+    background: rgba(255,212,71,.08);
+    border-color: rgba(255,212,71,.2);
+  }
+
+  .panel {
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01)),
+      var(--panel);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 22px;
+    padding: 1.55rem;
+    backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
+    box-shadow:
+      0 18px 48px rgba(0,0,0,.22),
+      inset 0 1px 0 rgba(255,255,255,.05);
+    transition: transform .35s ease, box-shadow .35s ease, border-color .35s ease;
+  }
+  .panel:hover {
+    transform: translateY(-6px);
+    box-shadow:
+      0 24px 54px rgba(0,0,0,.26),
+      inset 0 1px 0 rgba(255,255,255,.06);
+    border-color: rgba(255,212,71,.16);
+  }
+  .panel::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      linear-gradient(120deg, rgba(255,212,71,0.12), transparent 26%),
+      linear-gradient(0deg, transparent 94%, rgba(81,198,255,0.12));
+    opacity: .9;
+    pointer-events: none;
+  }
+
+  .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+  .kpi-card {
+    padding: 1.35rem 1.2rem;
+    background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 18px;
+    position: relative;
+    overflow: hidden;
+    transition: transform .3s ease, border-color .3s ease;
+  }
+  .kpi-card:hover {
+    transform: translateY(-5px) scale(1.01);
+    border-color: rgba(255,212,71,.16);
+  }
+  .kpi-card::after {
+    content: '';
+    position: absolute; left: 0; right: 0; top: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--gold), transparent 70%);
+    opacity: .9;
+  }
+  .kpi-label { font-size: .68rem; letter-spacing: .15em; text-transform: uppercase; color: #cfd9d2; margin-bottom: .45rem; }
+  .kpi-val { font-family: 'Teko', sans-serif; font-size: 3rem; color: var(--gold); line-height: .92; }
+  .kpi-sub { font-size: .84rem; color: var(--muted); margin-top: .3rem; }
+
+  .charts-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 2rem; align-items: start; }
+  .charts-3col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem; margin-top: 2rem; align-items: start; }
+  .chart-title {
+    font-family: 'Space Mono', monospace;
+    font-size: .7rem; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 1rem;
+  }
+  .chart-wrap { position: relative; height: 280px; }
+  .forecast-note {
+    margin-top: 1rem;
+    font-size: .82rem;
+    color: var(--muted);
+    line-height: 1.7;
+    max-width: 760px;
+  }
+  .forecast-note strong { color: var(--white); font-weight: 500; }
+
+  .tab-bar { display: flex; gap: .5rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+  .tab {
+    font-family: 'Space Mono', monospace;
+    font-size: .7rem; letter-spacing: .1em; text-transform: uppercase;
+    padding: .62rem 1rem;
+    border: 1px solid rgba(255,255,255,.08);
+    background: rgba(255,255,255,.03);
+    color: #d2ddd6;
+    cursor: pointer;
+    transition: all .2s;
+    border-radius: 999px;
+  }
+  .tab.active, .tab:hover { background: var(--gold); color: #09120d; border-color: var(--gold); transform: translateY(-1px); }
+
+  .match-table { width: 100%; border-collapse: collapse; }
+  .match-table thead tr { border-bottom: 1px solid rgba(255,255,255,.09); }
+  .match-table th {
+    font-family: 'Space Mono', monospace;
+    font-size: .62rem; letter-spacing: .15em; text-transform: uppercase;
+    color: #b9c8c0; text-align: left; padding: .75rem .8rem; font-weight: 400;
+  }
+  .match-table tbody tr {
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    transition: background .15s, transform .15s;
+  }
+  .match-table tbody tr:hover { background: rgba(255,255,255,0.04); }
+  .match-table td { padding: .9rem .8rem; font-size: .92rem; }
+  .match-table .rank-num {
+    font-family: 'Teko', sans-serif;
+    font-size: 1.7rem; color: var(--muted); width: 2.5rem;
+  }
+  .match-table .rank-num.gold { color: var(--gold); }
+  .badge {
+    font-family: 'Space Mono', monospace;
+    font-size: .6rem; padding: .18rem .5rem;
+    border-radius: 1px; letter-spacing: .1em; text-transform: uppercase;
+    display: inline-block;
+  }
+  .badge-final { background: rgba(245,197,24,.15); color: var(--gold); border: 1px solid rgba(245,197,24,.3); }
+  .badge-semi { background: rgba(61,159,212,.12); color: var(--blue); border: 1px solid rgba(61,159,212,.2); }
+  .badge-qf { background: rgba(245,128,62,.12); color: var(--orange); border: 1px solid rgba(245,128,62,.2); }
+  .badge-r16 { background: rgba(61,189,110,.1); color: var(--green); border: 1px solid rgba(61,189,110,.2); }
+  .badge-gs { background: rgba(255,255,255,.05); color: var(--muted); border: 1px solid rgba(255,255,255,.1); }
+  .badge-et { background: rgba(232,64,64,.1); color: var(--red); border: 1px solid rgba(232,64,64,.2); }
+  .badge-pen { background: rgba(232,64,64,.15); color: var(--red); border: 1px solid rgba(232,64,64,.3); }
+  .badge-rank {
+    background: rgba(245,197,24,.15);
+    color: var(--gold);
+    border: 1px solid rgba(245,197,24,.3);
+  }
+
+  .viewer-bar-wrap { display: flex; align-items: center; gap: .8rem; }
+  .viewer-bar-bg { flex: 1; height: 4px; background: rgba(255,255,255,.07); border-radius: 2px; overflow: hidden; }
+  .viewer-bar-fill { height: 100%; background: var(--gold); border-radius: 2px; transition: width .6s; }
+  .viewer-val { font-family: 'Space Mono', monospace; font-size: .78rem; color: var(--white); width: 5rem; text-align: right; }
+
+  .year-cards { display: grid; grid-template-columns: repeat(4,1fr); gap: 1rem; margin-top: 2rem; }
+  .year-card {
+    background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 20px;
+    padding: 1.4rem;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all .25s;
+  }
+  .year-card:hover, .year-card.active {
+    border-color: rgba(255,212,71,.45);
+    background: linear-gradient(180deg, rgba(255,212,71,0.1), rgba(255,255,255,0.04));
+    transform: translateY(-2px);
+  }
+  .year-card .yc-year {
+    font-family: 'Teko', sans-serif;
+    font-size: 3.4rem; color: var(--gold); line-height: .9; margin-bottom: .2rem;
+  }
+  .year-card .yc-host { font-size: .82rem; color: #d7e2db; margin-bottom: .9rem; letter-spacing: .05em; }
+  .year-card .yc-stat { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: .3rem; }
+  .year-card .yc-stat-label { font-size: .68rem; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+  .year-card .yc-stat-val { font-family: 'Space Mono', monospace; font-size: .85rem; color: var(--white); }
+  .year-card .yc-bar { height: 2px; background: rgba(255,255,255,.06); margin-top: 1rem; border-radius: 1px; overflow: hidden; }
+  .year-card .yc-bar-fill { height: 100%; background: var(--gold); border-radius: 1px; }
+
+  .drama-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 2rem; align-items: start; }
+
+  .stage-row { display: flex; align-items: center; gap: 1rem; padding: .9rem 0; border-bottom: 1px solid rgba(245,197,24,0.07); }
+  .stage-row:last-child { border-bottom: none; }
+  .stage-name { width: 130px; font-size: .78rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+  .stage-bar-wrap { flex: 1; height: 6px; background: rgba(255,255,255,.05); border-radius: 3px; overflow: hidden; }
+  .stage-bar-fill { height: 100%; border-radius: 3px; transition: width .7s; }
+  .stage-avg { font-family: 'Space Mono', monospace; font-size: .78rem; color: var(--white); width: 6rem; text-align: right; }
+  .stage-max { font-size: .7rem; color: var(--muted); width: 6rem; text-align: right; }
+
+  footer {
+    border-top: 1px solid rgba(255,255,255,0.08);
+    padding: 2.5rem 2rem;
+    text-align: center;
+    color: #bfd0c5;
+    font-size: .78rem;
+    font-family: 'Space Mono', monospace;
+    letter-spacing: .06em;
+    background: rgba(0,0,0,.14);
+  }
+
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.08), transparent);
+    margin: 0;
+  }
+
+  .chartjs-tooltip { font-family: 'Space Mono', monospace !important; }
+
+  .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 2rem; }
+  .mini-panel {
+    padding: 1rem;
+    border-radius: 18px;
+    background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+    border: 1px solid rgba(255,255,255,.08);
+    transition: transform .3s ease, border-color .3s ease, box-shadow .3s ease;
+  }
+  .mini-panel:hover {
+    transform: translateY(-6px);
+    border-color: rgba(255,212,71,.2);
+    box-shadow: 0 18px 32px rgba(0,0,0,.18);
+  }
+  .mini-label {
+    font-family: 'Space Mono', monospace;
+    font-size: .58rem;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: #cfdbd3;
+    margin-bottom: .35rem;
+  }
+  .mini-value {
+    font-family: 'Teko', sans-serif;
+    font-size: 2rem;
+    line-height: .92;
+    color: var(--gold);
+  }
+  .mini-copy {
+    font-size: .86rem;
+    line-height: 1.4;
+    color: var(--muted);
+    margin-top: .3rem;
+  }
+  .split-grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 1.5rem; margin-top: 2rem; align-items: start; }
+  .simulator-stage { display: grid; gap: 1rem; margin-top: 2rem; }
+  .simulator-main {
+    display: grid;
+    grid-template-columns: minmax(320px, .95fr) minmax(420px, 1.05fr);
+    gap: 1.5rem;
+    align-items: start;
+  }
+  .simulator-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: .45rem;
+  }
+  .field label {
+    font-family: 'Space Mono', monospace;
+    font-size: .58rem;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    color: #cfdbd3;
+  }
+  .field select, .field input {
+    width: 100%;
+    padding: .82rem .9rem;
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,.1);
+    background: rgba(255,255,255,.05);
+    color: var(--white);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1rem;
+  }
+  .field select option { color: black; }
+  .cta-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1rem;
+    padding: .9rem 1.2rem;
+    border: none;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--gold), #ffea8e);
+    color: #0a140d;
+    font-family: 'Space Mono', monospace;
+    font-size: .68rem;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: transform .24s ease, box-shadow .24s ease, filter .24s ease;
+  }
+  .cta-btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(110deg, transparent 24%, rgba(255,255,255,.44) 50%, transparent 76%);
+    transform: translateX(-130%);
+    transition: transform .7s ease;
+  }
+  .cta-btn:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 14px 28px rgba(255,212,71,.22);
+    filter: saturate(1.08);
+  }
+  .cta-btn:hover::after {
+    transform: translateX(130%);
+  }
+  .result-stack { display: grid; gap: 1rem; align-content: start; }
+  .sim-result {
+    padding: 1.2rem;
+    border-radius: 20px;
+    background: linear-gradient(180deg, rgba(81,198,255,.12), rgba(255,255,255,.03));
+    border: 1px solid rgba(81,198,255,.16);
+  }
+  .sim-result h3 {
+    font-family: 'Teko', sans-serif;
+    font-size: 2.4rem;
+    line-height: .9;
+    margin-bottom: .3rem;
+  }
+  .sim-result p {
+    color: #c6d5cc;
+    line-height: 1.4;
+    font-size: .95rem;
+  }
+  .signal-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+  }
+  .signal-card {
+    padding: 1.05rem;
+    border-radius: 18px;
+    background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+    border: 1px solid rgba(255,255,255,.08);
+  }
+  .signal-card h4 {
+    font-family: 'Teko', sans-serif;
+    font-size: 2rem;
+    line-height: .92;
+    color: var(--white);
+    margin-top: .2rem;
+  }
+  .signal-topline {
+    display: flex;
+    justify-content: space-between;
+    gap: .8rem;
+    align-items: center;
+  }
+  .signal-rank {
+    font-family: 'Space Mono', monospace;
+    font-size: .64rem;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+  .signal-stars {
+    margin-top: .65rem;
+    color: #d0ddd4;
+    font-size: .86rem;
+    line-height: 1.4;
+  }
+  .signal-metrics {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: .55rem;
+    margin-top: .75rem;
+  }
+  .signal-pill {
+    padding: .55rem .6rem;
+    border-radius: 12px;
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.06);
+  }
+  .signal-pill strong {
+    display: block;
+    font-family: 'Teko', sans-serif;
+    font-size: 1.4rem;
+    line-height: .95;
+    color: var(--gold);
+  }
+  .signal-pill span {
+    display: block;
+    color: #c7d5cc;
+    font-size: .62rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+  }
+  .signal-method-copy {
+    margin-top: .55rem;
+    color: #c7d5cc;
+    font-size: .88rem;
+    line-height: 1.45;
+  }
+  .spotlight-deck {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+  .player-spotlight-card {
+    position: relative;
+    overflow: hidden;
+    padding: 1.05rem;
+    border-radius: 22px;
+    background:
+      radial-gradient(circle at top right, rgba(255,212,71,.16), transparent 24%),
+      radial-gradient(circle at 15% 18%, rgba(81,198,255,.12), transparent 18%),
+      linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02));
+    border: 1px solid rgba(255,255,255,.08);
+    min-height: 540px;
+    box-shadow: 0 18px 42px rgba(0,0,0,.22);
+  }
+  .player-spotlight-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(4,14,10,.08) 42%, rgba(4,14,10,.3) 100%);
+    pointer-events: none;
+  }
+  .player-spotlight-hero {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    align-items: start;
+    position: relative;
+    z-index: 1;
+  }
+  .player-spotlight-media {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 24% 22%, rgba(255,212,71,.24), transparent 22%),
+      radial-gradient(circle at 72% 14%, rgba(81,198,255,.18), transparent 20%),
+      linear-gradient(180deg, rgba(20,30,24,.78), rgba(8,18,12,.98));
+    min-height: 360px;
+  }
+  .player-spotlight-media::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(180deg, rgba(0,0,0,.02) 0%, rgba(0,0,0,.16) 40%, rgba(0,0,0,.58) 100%),
+      linear-gradient(120deg, rgba(255,212,71,.18), transparent 34%);
+    pointer-events: none;
+  }
+  .player-spotlight-media::before {
+    content: '';
+    position: absolute;
+    inset: auto -6% -18% -6%;
+    height: 42%;
+    background: radial-gradient(circle at center, rgba(255,212,71,.22), rgba(255,212,71,0) 70%);
+    filter: blur(24px);
+    pointer-events: none;
+    z-index: 1;
+  }
+  .player-photo {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 360px;
+    border-radius: 20px;
+    object-fit: cover;
+    object-position: center 22%;
+    display: block;
+    filter: saturate(1.14) contrast(1.06) brightness(1.03);
+  }
+  .player-photo-backdrop {
+    z-index: 0;
+    transform: scale(1.14);
+    filter: blur(18px) saturate(1.2) brightness(.72);
+    opacity: .78;
+    object-position: center 24%;
+  }
+  .player-photo-figure {
+    z-index: 2;
+    transform: scale(1.08);
+    transform-origin: center top;
+    filter: saturate(1.16) contrast(1.08) brightness(1.03) drop-shadow(0 18px 36px rgba(0,0,0,.38));
+    mask-image: linear-gradient(180deg, rgba(0,0,0,1) 0%, rgba(0,0,0,.99) 74%, rgba(0,0,0,.26) 100%);
+  }
+  .player-photo-fallback {
+    width: 100%;
+    height: 360px;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Teko', sans-serif;
+    font-size: 5.8rem;
+    color: var(--white);
+    background:
+      radial-gradient(circle at 28% 22%, rgba(255,212,71,.18), transparent 18%),
+      linear-gradient(180deg, rgba(255,255,255,.09), rgba(255,255,255,.03)),
+      linear-gradient(135deg, rgba(255,212,71,.2), rgba(81,198,255,.22));
+    position: relative;
+    z-index: 2;
+  }
+  .player-spotlight-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(210px, .95fr);
+    gap: 1rem;
+    align-items: start;
+  }
+  .player-spotlight-copy-block {
+    display: grid;
+    gap: .75rem;
+  }
+  .player-spotlight-meta h4 {
+    font-family: 'Teko', sans-serif;
+    font-size: 2.8rem;
+    line-height: .9;
+    color: var(--white);
+  }
+  .player-spotlight-team {
+    font-family: 'Space Mono', monospace;
+    font-size: .64rem;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: .35rem;
+  }
+  .player-spotlight-role {
+    color: #d7e3dc;
+    font-size: .94rem;
+    line-height: 1.35;
+    margin-top: .3rem;
+  }
+  .player-spotlight-copy {
+    color: #c8d6ce;
+    font-size: .92rem;
+    line-height: 1.45;
+  }
+  .player-spotlight-stack {
+    display: grid;
+    gap: .65rem;
+  }
+  .player-detail {
+    padding: .7rem .8rem;
+    border-radius: 14px;
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.06);
+  }
+  .player-detail strong {
+    display: block;
+    font-family: 'Space Mono', monospace;
+    font-size: .58rem;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: #cbd8d0;
+    margin-bottom: .25rem;
+  }
+  .player-detail span {
+    display: block;
+    color: var(--white);
+    font-size: .92rem;
+    line-height: 1.4;
+  }
+  .player-watch-list {
+    display: grid;
+    gap: .45rem;
+    margin-top: .25rem;
+  }
+  .player-watch-item {
+    padding-left: .9rem;
+    color: #d2ddd6;
+    font-size: .88rem;
+    line-height: 1.4;
+    position: relative;
+  }
+  .player-watch-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: .45rem;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--gold);
+  }
+  .clock-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 2rem; }
+  .clock-card {
+    padding: 1.2rem;
+    border-radius: 20px;
+    background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02));
+    border: 1px solid rgba(255,255,255,.08);
+    transition: transform .3s ease, border-color .3s ease;
+  }
+  .clock-card:hover { transform: translateY(-4px); border-color: rgba(255,212,71,.16); }
+  .clock-head {
+    font-family: 'Space Mono', monospace;
+    font-size: .58rem;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: #cfdbd3;
+  }
+  .clock-big {
+    font-family: 'Teko', sans-serif;
+    font-size: 2.5rem;
+    line-height: .9;
+    color: var(--gold);
+    margin-top: .4rem;
+  }
+  .clock-sub {
+    margin-top: .35rem;
+    color: var(--muted);
+    font-size: .86rem;
+    line-height: 1.35;
+  }
+  .timeline-scrolly {
+    display: grid;
+    grid-template-columns: .95fr 1.05fr;
+    gap: 1.5rem;
+    margin-top: 2rem;
+    align-items: start;
+  }
+  .timeline-spotlight {
+    position: sticky;
+    top: 94px;
+    min-height: 520px;
+    padding: 1.4rem;
+    border-radius: 24px;
+    background:
+      radial-gradient(circle at top right, rgba(255,212,71,.18), transparent 24%),
+      linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02));
+    border: 1px solid rgba(255,255,255,.09);
+    box-shadow: 0 18px 38px rgba(0,0,0,.22);
+    overflow: hidden;
+    transition: transform .35s ease;
+  }
+  .timeline-spotlight:hover { transform: translateY(-6px); }
+  .timeline-spotlight.is-refreshing { animation: revealRise .5s ease; }
+  .timeline-spotlight::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(180deg, rgba(81,198,255,.12), transparent 22%),
+      radial-gradient(circle at 70% 65%, rgba(81,198,255,.14), transparent 28%);
+    pointer-events: none;
+  }
+  .timeline-spotlight-year {
+    font-family: 'Teko', sans-serif;
+    font-size: clamp(6rem, 12vw, 9rem);
+    line-height: .8;
+    color: transparent;
+    -webkit-text-stroke: 2px rgba(255,212,71,.9);
+    position: relative;
+    z-index: 1;
+  }
+  .timeline-spotlight-title {
+    font-family: 'Teko', sans-serif;
+    font-size: 3rem;
+    line-height: .9;
+    color: var(--white);
+    margin-top: .6rem;
+    position: relative;
+    z-index: 1;
+  }
+  .timeline-spotlight-copy {
+    margin-top: .8rem;
+    color: #d1ddd5;
+    line-height: 1.45;
+    font-size: 1rem;
+    max-width: 480px;
+    position: relative;
+    z-index: 1;
+  }
+  .timeline-spotlight-match {
+    margin-top: 1.1rem;
+    display: inline-flex;
+    align-items: center;
+    gap: .6rem;
+    padding: .6rem .8rem;
+    border-radius: 999px;
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.08);
+    font-family: 'Space Mono', monospace;
+    font-size: .62rem;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: #dbe6df;
+    position: relative;
+    z-index: 1;
+  }
+  .timeline-spotlight-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: .9rem;
+    margin-top: 1.2rem;
+    position: relative;
+    z-index: 1;
+  }
+  .timeline-spotlight-stat {
+    padding: .95rem 1rem;
+    border-radius: 16px;
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.08);
+  }
+  .timeline-spotlight-stat strong {
+    display: block;
+    font-family: 'Teko', sans-serif;
+    font-size: 2rem;
+    line-height: .9;
+    color: var(--gold);
+  }
+  .timeline-spotlight-stat span {
+    display: block;
+    font-size: .72rem;
+    color: #d2ddd6;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+  }
+  .timeline {
+    display: grid;
+    gap: 1rem;
+  }
+  .timeline-item {
+    display: grid;
+    grid-template-columns: 96px 1fr 130px;
+    gap: 1rem;
+    align-items: center;
+    padding: 1.1rem 1.15rem;
+    border-radius: 18px;
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.07);
+    cursor: pointer;
+    transition: transform .2s, border-color .2s, background .2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .timeline-item::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,212,71,.08), transparent);
+    opacity: 0;
+    transform: translateX(-25%);
+    transition: opacity .25s ease, transform .45s ease;
+  }
+  .timeline-item:hover,
+  .timeline-item.active {
+    transform: translateX(4px);
+    border-color: rgba(255,212,71,.35);
+    background: linear-gradient(180deg, rgba(255,212,71,.1), rgba(255,255,255,.03));
+  }
+  .timeline-item:hover::after,
+  .timeline-item.active::after {
+    opacity: 1;
+    transform: translateX(25%);
+  }
+  .timeline-year {
+    font-family: 'Teko', sans-serif;
+    font-size: 2.6rem;
+    color: var(--gold);
+    line-height: .9;
+  }
+  .timeline-copy strong {
+    display: block;
+    font-size: 1rem;
+    color: var(--white);
+    margin-bottom: .2rem;
+  }
+  .timeline-copy span {
+    color: var(--muted);
+    font-size: .9rem;
+    line-height: 1.4;
+  }
+  .timeline-stat {
+    text-align: right;
+    font-family: 'Space Mono', monospace;
+    font-size: .76rem;
+    color: #d7e2db;
+  }
+  .map-shell {
+    display: grid;
+    grid-template-columns: 1.1fr .9fr;
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+  .map-panel {
+    position: relative;
+    min-height: 560px;
+    padding: 1.2rem;
+    border-radius: 24px;
+    background:
+      radial-gradient(circle at 30% 20%, rgba(81,198,255,.16), transparent 18%),
+      linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02));
+    border: 1px solid rgba(255,255,255,.08);
+    overflow: hidden;
+  }
+  .map-panel g circle:first-child { animation: mapPulse 3.8s ease-in-out infinite; transform-origin: center; }
+  .map-filter {
+    display: flex;
+    gap: .6rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+  }
+  .map-btn {
+    padding: .55rem .85rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,.08);
+    background: rgba(255,255,255,.03);
+    color: #d1ddd5;
+    cursor: pointer;
+    font-family: 'Space Mono', monospace;
+    font-size: .62rem;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    transition: transform .22s ease, border-color .22s ease, background .22s ease, color .22s ease, box-shadow .22s ease;
+  }
+  .map-btn:hover {
+    transform: translateY(-2px);
+    border-color: rgba(255,212,71,.24);
+    box-shadow: 0 10px 18px rgba(0,0,0,.14);
+  }
+  .map-btn.active {
+    background: var(--gold);
+    color: #09120d;
+    border-color: var(--gold);
+  }
+  .na-map {
+    width: 100%;
+    height: 460px;
+    border-radius: 20px;
+    background:
+      radial-gradient(circle at 50% 10%, rgba(255,255,255,.06), transparent 32%),
+      linear-gradient(180deg, rgba(8,32,20,.85), rgba(5,18,12,.94));
+    border: 1px solid rgba(255,255,255,.06);
+  }
+  .map-side {
+    display: grid;
+    gap: 1rem;
+  }
+  .map-list {
+    display: grid;
+    gap: .7rem;
+  }
+  .map-list-item {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: .8rem;
+    padding: .9rem 1rem;
+    border-radius: 16px;
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.07);
+    transition: transform .25s ease, border-color .25s ease;
+  }
+  .map-list-item:hover { transform: translateX(4px); border-color: rgba(255,212,71,.18); }
+  .map-list-item strong {
+    display: block;
+    color: var(--white);
+    font-size: .98rem;
+  }
+  .map-list-item span {
+    color: var(--muted);
+    font-size: .84rem;
+    line-height: 1.35;
+  }
+  .map-list-val {
+    font-family: 'Teko', sans-serif;
+    font-size: 2rem;
+    line-height: .9;
+    color: var(--gold);
+    align-self: center;
+  }
+  .profile-strip {
+    display: flex;
+    gap: .7rem;
+    flex-wrap: wrap;
+    margin-top: 1.5rem;
+  }
+  .profile-chip {
+    padding: .62rem .85rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,.08);
+    background: rgba(255,255,255,.03);
+    color: #d1ddd5;
+    cursor: pointer;
+    font-family: 'Space Mono', monospace;
+    font-size: .64rem;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    transition: transform .22s ease, border-color .22s ease, background .22s ease, color .22s ease, box-shadow .22s ease;
+  }
+  .profile-chip:hover {
+    transform: translateY(-2px);
+    border-color: rgba(255,212,71,.22);
+    box-shadow: 0 10px 18px rgba(0,0,0,.14);
+  }
+  .profile-chip.active {
+    background: var(--gold);
+    color: #09120d;
+    border-color: var(--gold);
+  }
+  .profile-card {
+    margin-top: 1.2rem;
+    padding: 1.4rem;
+    border-radius: 22px;
+    background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02));
+    border: 1px solid rgba(255,255,255,.08);
+    transition: transform .3s ease;
+  }
+  .profile-card:hover { transform: translateY(-4px); }
+
+  [data-reveal] {
+    opacity: 0;
+    transform: translateY(26px) scale(.985);
+    transition:
+      opacity .85s cubic-bezier(.2,.65,.2,1) var(--reveal-delay, 0ms),
+      transform .85s cubic-bezier(.2,.65,.2,1) var(--reveal-delay, 0ms);
+    will-change: opacity, transform;
+  }
+  [data-reveal="slide-left"] { transform: translateX(-36px); }
+  [data-reveal="slide-right"] { transform: translateX(36px); }
+  [data-reveal="zoom"] { transform: translateY(18px) scale(.94); }
+  [data-reveal].is-visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  .profile-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: end;
+    margin-bottom: 1rem;
+  }
+  .profile-name {
+    font-family: 'Teko', sans-serif;
+    font-size: 3rem;
+    line-height: .9;
+    color: var(--white);
+  }
+  .profile-meta {
+    color: var(--muted);
+    font-size: .92rem;
+  }
+  .profile-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1rem; }
+
+  @media (max-width: 900px) {
+    .feature-grid, .clock-row, .profile-grid, .split-grid, .map-shell, .timeline-scrolly, .signal-grid, .spotlight-deck, .simulator-main, .player-spotlight-body { grid-template-columns: 1fr; }
+    .timeline-item { grid-template-columns: 1fr; }
+    .timeline-stat { text-align: left; }
+    .timeline-spotlight { position: relative; top: 0; min-height: auto; }
+    .player-spotlight-media { min-height: 260px; }
+    .player-photo, .player-photo-fallback { width: 100%; height: 260px; }
+  }
+
+  @media (max-width: 900px) {
+    .kpi-grid { grid-template-columns: repeat(2,1fr); }
+    .charts-2col, .charts-3col, .drama-grid { grid-template-columns: 1fr; }
+    .year-cards { grid-template-columns: repeat(2,1fr); }
+    .hero { text-align: center; }
+    .hero-shell { grid-template-columns: 1fr; }
+    .hero-sub { border-left: none; padding-left: 0; margin-left: auto; margin-right: auto; }
+    .hero-stats { grid-template-columns: repeat(2,1fr); gap: 1rem; }
+    .hero-board { justify-content: center; }
+    .hero-aside { width: min(480px, 100%); margin: 0 auto; }
+    .hero-ticker { justify-content: center; }
+    .section-head { flex-direction: column; align-items: flex-start; }
+    .nav-links { justify-content: flex-start; }
+    .circle-glow { right: 50%; transform: translateX(50%); opacity: .5; }
+  }
+  @media (max-width: 540px) {
+    .year-cards { grid-template-columns: 1fr; }
+    .kpi-grid { grid-template-columns: 1fr; }
+    .hero-stats { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">WORLD<span>CUP</span>.ANALYTICS</div>
+  <ul class="nav-links">
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#matches">Matches</a></li>
+    <li><a href="#stages">Stages</a></li>
+    <li><a href="#signals">Signals</a></li>
+    <li><a href="#teams">Teams</a></li>
+    <li><a href="#profiles">Profiles</a></li>
+    <li><a href="#forecast">Forecast</a></li>
+    <li><a href="#simulator">Simulator</a></li>
+    <li><a href="#rivalries">Rivalries</a></li>
+    <li><a href="#timeline">Timeline</a></li>
+    <li><a href="#map">Map</a></li>
+    <li><a href="#tournaments">Deep Dive</a></li>
+  </ul>
+</nav>
+
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="pitch-lines"></div>
+  <div class="circle-glow"></div>
+  <div class="hero-shell">
+    <div class="hero-main">
+      <div class="hero-board">
+        <span class="hero-chip">Live</span>
+        <div>
+          <div class="hero-board-label">World Cup Audience Index</div>
+          <div class="hero-board-score">43.5B : 256</div>
+        </div>
+        <div class="hero-board-divider"></div>
+        <div>
+          <div class="hero-board-label">Peak Match</div>
+          <div class="hero-board-score">550M</div>
+        </div>
+      </div>
+      <div class="hero-kicker">Tournament Pulse Engine</div>
+      <h1>WORLD CUP<br><span>UNDER THE LIGHTS</span></h1>
+      <p class="hero-sub">From opening whistles to penalty chaos, this dashboard tracks how football's biggest stage turns matches into global audience events. Four tournaments, 256 matches, billions of viewers.</p>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="hero-stat-num">256</div>
+          <div class="hero-stat-label">Total Matches</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-num">43.5B</div>
+          <div class="hero-stat-label">Cumulative Views</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-num">550M</div>
+          <div class="hero-stat-label">Peak Single Match</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-num">37</div>
+          <div class="hero-stat-label">Drama Matches</div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-aside">
+      <div class="hero-spotlight">
+        <div class="hero-spotlight-label">Matchday Spotlight</div>
+        <div class="hero-spotlight-title">2026 FORECAST<br>HOST-MARKET SURGE</div>
+        <div class="hero-spotlight-copy">The North America edition expands the bracket, floods U.S. television with premium inventory, and creates a wider range of high-volume windows for English and Spanish-language broadcasters.</div>
+        <div class="hero-spotlight-metrics">
+          <div class="hero-spotlight-metric">
+            <strong>104</strong>
+            <span>Total Matches</span>
+          </div>
+          <div class="hero-spotlight-metric">
+            <strong>78</strong>
+            <span>U.S. Hosted</span>
+          </div>
+          <div class="hero-spotlight-metric">
+            <strong>17.1B</strong>
+            <span>Forecast Total</span>
+          </div>
+          <div class="hero-spotlight-metric">
+            <strong>205M</strong>
+            <span>KO Avg</span>
+          </div>
+        </div>
+        <div class="countdown-card">
+          <div class="countdown-label">Opening Match Countdown</div>
+          <div class="countdown-grid" id="openingCountdown">
+            <div class="countdown-unit">
+              <span class="countdown-val" data-unit="days">00</span>
+              <label>Days</label>
+            </div>
+            <div class="countdown-unit">
+              <span class="countdown-val" data-unit="hours">00</span>
+              <label>Hours</label>
+            </div>
+            <div class="countdown-unit">
+              <span class="countdown-val" data-unit="minutes">00</span>
+              <label>Min</label>
+            </div>
+            <div class="countdown-unit">
+              <span class="countdown-val" data-unit="seconds">00</span>
+              <label>Sec</label>
+            </div>
+          </div>
+          <div class="countdown-meta" id="openingCountdownMeta">Mexico vs South Africa • Thursday, June 11, 2026 • 13:00 Mexico City</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-ticker">
+    <div class="hero-ticker-label">Matchday Feed</div>
+    <div class="hero-ticker-track">
+      <div class="hero-ticker-item"><strong>Top Signal:</strong> host-nation appearances produce the sharpest audience lift</div>
+      <div class="hero-ticker-item"><strong>Biggest spike:</strong> Qatar vs Ecuador hit 550M in 2022</div>
+      <div class="hero-ticker-item"><strong>2026 watch:</strong> U.S. windows and bilingual distribution reshape inventory value</div>
+    </div>
+  </div>
+  <div class="scroll-cue">
+    <svg width="16" height="24" viewBox="0 0 16 24" fill="none"><rect x="1" y="1" width="14" height="22" rx="7" stroke="#8a8a8a" stroke-width="1.5"/><rect x="6" y="5" width="4" height="6" rx="2" fill="#8a8a8a"/></svg>
+    SCROLL
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<section id="overview">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-head-copy">
+        <div class="section-label">Global Overview</div>
+        <h2 class="section-title">The Numbers at a Glance</h2>
+        <p class="section-desc">Aggregated viewership, attendance and engagement metrics across all four World Cups in the dataset.</p>
+      </div>
+      <div class="section-badge">
+        <div class="section-badge-label">Window</div>
+        <div class="section-badge-value">2010-2022</div>
+      </div>
+    </div>
+
+    <div class="kpi-grid" style="margin-top:2.5rem;">
+      <div class="kpi-card">
+        <div class="kpi-label">Avg Viewers / Match</div>
+        <div class="kpi-val">170M</div>
+        <div class="kpi-sub">Across all 256 matches</div>
+      </div>
+      <div class="kpi-card" style="--gold:var(--blue)">
+        <div class="kpi-label">Highest Single Match</div>
+        <div class="kpi-val" style="color:var(--blue)">550M</div>
+        <div class="kpi-sub">Qatar vs Ecuador — 2022 opener</div>
+      </div>
+      <div class="kpi-card" style="--gold:var(--green)">
+        <div class="kpi-label">Avg Stadium Fill Rate</div>
+        <div class="kpi-val" style="color:var(--green)">95.1%</div>
+        <div class="kpi-sub">Across all tournaments</div>
+      </div>
+      <div class="kpi-card" style="--gold:var(--orange)">
+        <div class="kpi-label">Drama Multiplier Matches</div>
+        <div class="kpi-val" style="color:var(--orange)">37</div>
+        <div class="kpi-sub">Extra-time or penalty shootout</div>
+      </div>
+    </div>
+
+    <div class="charts-2col">
+      <div class="panel">
+        <div class="chart-title">Total Cumulative Viewership by Tournament (Billions)</div>
+        <div class="chart-wrap"><canvas id="chartTournamentViewers"></canvas></div>
+      </div>
+      <div class="panel">
+        <div class="chart-title">Avg Viewership per Match vs Attendance Fill Rate by Year</div>
+        <div class="chart-wrap"><canvas id="chartViewersAttendance"></canvas></div>
+      </div>
+    </div>
+
+    <div class="charts-2col" style="margin-top:1.5rem;">
+      <div class="panel">
+        <div class="chart-title">Viewership Distribution — All 256 Matches (Millions)</div>
+        <div class="chart-wrap"><canvas id="chartDistribution"></canvas></div>
+      </div>
+      <div class="panel">
+        <div class="chart-title">Match Count by Stage Across All Tournaments</div>
+        <div class="chart-wrap"><canvas id="chartStageCount"></canvas></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section id="matches">
+  <div class="container">
+    <div class="section-label">Match Intelligence</div>
+    <h2 class="section-title">Most-Watched Matches</h2>
+    <p class="section-desc">The 20 highest-viewership matches across all four World Cups. Filter by tournament or stage.</p>
+
+    <div class="tab-bar" style="margin-top:2rem;" id="matchTabs">
+      <button class="tab active" data-filter="all">All Years</button>
+      <button class="tab" data-filter="2010">2010 — South Africa</button>
+      <button class="tab" data-filter="2014">2014 — Brazil</button>
+      <button class="tab" data-filter="2018">2018 — Russia</button>
+      <button class="tab" data-filter="2022">2022 — Qatar</button>
+    </div>
+
+    <div class="panel">
+      <table class="match-table" id="matchTable">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Match</th>
+            <th>Year</th>
+            <th>Stage</th>
+            <th>Flags</th>
+            <th>Global Viewers</th>
+          </tr>
+        </thead>
+        <tbody id="matchTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section id="stages">
+  <div class="container">
+    <div class="section-label">Competitive Progression</div>
+    <h2 class="section-title">Viewership by Stage</h2>
+    <p class="section-desc">As the tournament progresses, stakes rise — and so does the global audience. Semi-finals command the highest average viewership, while penalty-shootout drama can triple group-stage numbers.</p>
+
+    <div class="drama-grid">
+      <div class="panel">
+        <div class="chart-title">Average Viewership per Stage (Millions)</div>
+        <div id="stageRows"></div>
+      </div>
+      <div class="panel">
+        <div class="chart-title">Avg Viewership by Stage — All Tournaments</div>
+        <div class="chart-wrap"><canvas id="chartStageBar"></canvas></div>
+      </div>
+    </div>
+
+    <div class="charts-2col" style="margin-top:1.5rem;">
+      <div class="panel">
+        <div class="chart-title">Drama Impact: Normal vs Extra-Time vs Penalties</div>
+        <div class="chart-wrap"><canvas id="chartDrama"></canvas></div>
+      </div>
+      <div class="panel">
+        <div class="chart-title">Stage Viewership Evolution — 2010 to 2022</div>
+        <div class="chart-wrap"><canvas id="chartStageEvolution"></canvas></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section id="signals">
+  <div class="container">
+    <div class="section-label">Audience Signals</div>
+    <h2 class="section-title">What Moves The Audience</h2>
+    <p class="section-desc">Not all fixtures behave the same. Host-nation appearances, opening ceremonies and knockout drama create the biggest spikes, while a small set of cities absorb an outsized share of tournament attention.</p>
+
+    <div class="charts-2col">
+      <div class="panel">
+        <div class="chart-title">Audience Lift by Match Type (Millions)</div>
+        <div class="chart-wrap"><canvas id="chartDrivers"></canvas></div>
+      </div>
+      <div class="panel">
+        <div class="chart-title">Top Host Cities by Cumulative Viewership (Billions)</div>
+        <div class="chart-wrap"><canvas id="chartCities"></canvas></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section id="teams">
+  <div class="container">
+    <div class="section-label">National Teams</div>
+    <h2 class="section-title">Most-Watched Nations</h2>
+    <p class="section-desc">Average global viewership for matches featuring each nation, weighted by appearances. Host-nation effect and historic rivalries drive significant uplifts.</p>
+
+    <div class="charts-3col">
+      <div class="panel" style="grid-column:span 2;">
+        <div class="chart-title">Top 15 Nations — Average Match Viewership (Millions)</div>
+        <div class="chart-wrap" style="height:340px;"><canvas id="chartTeams"></canvas></div>
+      </div>
+      <div class="panel">
+        <div class="chart-title">Host Advantage — Viewership Uplift</div>
+        <div class="chart-wrap" style="height:340px;"><canvas id="chartHostEffect"></canvas></div>
+      </div>
+    </div>
+
+    <div class="charts-2col" style="margin-top:1.5rem;">
+      <div class="panel">
+        <div class="chart-title">Current Top 10 FIFA-Ranked Teams — Avg World Cup Viewership</div>
+        <div class="chart-wrap" style="height:340px;"><canvas id="chartFifaTop10"></canvas></div>
+      </div>
+      <div class="panel">
+        <div class="chart-title">Top 10 FIFA-Ranked Teams — Historical Audience Profile</div>
+        <table class="match-table">
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Team</th>
+              <th>Matches</th>
+              <th>Total</th>
+              <th>Avg</th>
+              <th>Peak Match</th>
+            </tr>
+          </thead>
+          <tbody id="fifaTop10TableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section id="profiles">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-head-copy">
+        <div class="section-label">Team Profiles</div>
+        <h2 class="section-title">National Team Audience Pages</h2>
+        <p class="section-desc">A quick profile view for the biggest audience-driving nations in the dataset, including historical performance, marquee fixtures and what they could mean for 2026.</p>
+      </div>
+      <div class="section-badge">
+        <div class="section-badge-label">Focus</div>
+        <div class="section-badge-value">6 teams</div>
+      </div>
+    </div>
+    <div class="profile-strip" id="profileChips"></div>
+    <div class="profile-card" id="teamProfileCard"></div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section id="forecast">
+  <div class="container">
+    <div class="section-label">World Cup 2026</div>
+    <h2 class="section-title">Forecasting The North America Tournament</h2>
+    <p class="section-desc">This projection is model-based, not official. FIFA World Cup 2026 is co-hosted by Canada, Mexico and the United States, not the U.S. alone. The forecast below assumes the tournament's center of gravity sits in the U.S., which is scheduled to host 78 of the 104 matches.</p>
+
+    <div class="kpi-grid" style="margin-top:2.5rem;">
+      <div class="kpi-card">
+        <div class="kpi-label">Projected Total Viewers</div>
+        <div class="kpi-val">17.1B</div>
+        <div class="kpi-sub">104-match tournament model</div>
+      </div>
+      <div class="kpi-card" style="--gold:var(--blue)">
+        <div class="kpi-label">Projected Avg / Match</div>
+        <div class="kpi-val" style="color:var(--blue)">164M</div>
+        <div class="kpi-sub">Lower than 2018 on a per-match basis, higher in total</div>
+      </div>
+      <div class="kpi-card" style="--gold:var(--green)">
+        <div class="kpi-label">U.S.-Hosted Matches</div>
+        <div class="kpi-val" style="color:var(--green)">78</div>
+        <div class="kpi-sub">11 U.S. cities out of 16 total host cities</div>
+      </div>
+      <div class="kpi-card" style="--gold:var(--orange)">
+        <div class="kpi-label">Final Venue</div>
+        <div class="kpi-val" style="color:var(--orange)">NY/NJ</div>
+        <div class="kpi-sub">Sunday, July 19, 2026 in East Rutherford, New Jersey</div>
+      </div>
+    </div>
+
+    <div class="charts-2col">
+      <div class="panel">
+        <div class="chart-title">Historical Tournament Totals vs 2026 North America Forecast</div>
+        <div class="chart-wrap"><canvas id="chartForecastTrend"></canvas></div>
+      </div>
+      <div class="panel">
+        <div class="chart-title">Projected 2026 Audience by Stage (Billions)</div>
+        <div class="chart-wrap"><canvas id="chartForecastStages"></canvas></div>
+      </div>
+    </div>
+
+    <div class="charts-2col" style="margin-top:1.5rem;">
+      <div class="panel">
+        <div class="chart-title">2026 Forecast Scenarios — Total Audience (Billions)</div>
+        <div class="chart-wrap"><canvas id="chartScenarioForecast"></canvas></div>
+      </div>
+      <div class="panel">
+        <div class="chart-title">Host-Country Match Share and Audience Weight</div>
+        <div class="chart-wrap"><canvas id="chartHostImpact"></canvas></div>
+      </div>
+    </div>
+
+    <div class="charts-2col" style="margin-top:1.5rem;">
+      <div class="panel">
+        <div class="chart-title">Likely 2026 Marquee Matchups — Forecast Global Viewership</div>
+        <table class="match-table">
+          <thead>
+            <tr>
+              <th>Matchup</th>
+              <th>Forecast</th>
+              <th>Why It Travels</th>
+            </tr>
+          </thead>
+          <tbody id="forecastMatchTableBody"></tbody>
+        </table>
+      </div>
+      <div class="panel">
+        <div class="chart-title">U.S. Broadcaster Inventory — 2026 Match Count</div>
+        <div class="chart-wrap" style="height:340px;"><canvas id="chartBroadcastInventory"></canvas></div>
+        <table class="match-table" style="margin-top:1rem;">
+          <thead>
+            <tr>
+              <th>Channel / Platform</th>
+              <th>Inventory</th>
+              <th>Expectation</th>
+            </tr>
+          </thead>
+          <tbody id="broadcastExpectTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <p class="forecast-note"><strong>Forecast logic:</strong> 72 group-stage matches and a new 32-match knockout path increase total audience volume sharply, even with a moderated average-per-match baseline. The model also assumes a U.S.-weighted media footprint because the United States hosts 78 matches, while Mexico opens the tournament on June 11, 2026 and the final is scheduled for July 19, 2026 in New York New Jersey. Match-level forecasts now also blend current FIFA ranking signals, brand popularity, recent performance momentum and expected star-player availability.</p>
+
+    <div class="clock-row">
+      <div class="clock-card">
+        <div class="clock-head">Opening Match</div>
+        <div class="clock-big" id="clockOpeningBig">--</div>
+        <div class="clock-sub">Mexico vs South Africa • Mexico City</div>
+      </div>
+      <div class="clock-card">
+        <div class="clock-head">USA First Match</div>
+        <div class="clock-big" id="clockUsaBig">--</div>
+        <div class="clock-sub">USA Match 4 • Friday, June 12, 2026 • Los Angeles Stadium</div>
+      </div>
+      <div class="clock-card">
+        <div class="clock-head">Final Countdown</div>
+        <div class="clock-big" id="clockFinalBig">--</div>
+        <div class="clock-sub">Sunday, July 19, 2026 • New York New Jersey</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section id="simulator">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-head-copy">
+        <div class="section-label">Simulator</div>
+        <h2 class="section-title">Build A 2026 Match And Forecast The Audience</h2>
+        <p class="section-desc">Choose teams, stage, host country and drama conditions, then estimate likely global viewership. This model now blends historical 2010–2022 audience behavior with current FIFA ranking, team popularity, recent form and expected star-player availability.</p>
+      </div>
+      <div class="section-badge">
+        <div class="section-badge-label">Model</div>
+        <div class="section-badge-value">Custom</div>
+      </div>
+    </div>
+    <div class="simulator-stage">
+      <div class="simulator-main">
+      <div class="panel">
+        <div class="chart-title">Match Inputs</div>
+        <div class="simulator-grid">
+          <div class="field">
+            <label for="simHome">Home Team</label>
+            <select id="simHome"></select>
+          </div>
+          <div class="field">
+            <label for="simAway">Away Team</label>
+            <select id="simAway"></select>
+          </div>
+          <div class="field">
+            <label for="simStage">Stage</label>
+            <select id="simStage">
+              <option value="group">Group Stage</option>
+              <option value="r32">Round of 32</option>
+              <option value="r16">Round of 16</option>
+              <option value="qf">Quarter-Final</option>
+              <option value="sf">Semi-Final</option>
+              <option value="final">Final</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="simHost">Host Country</label>
+            <select id="simHost">
+              <option value="USA">United States</option>
+              <option value="Mexico">Mexico</option>
+              <option value="Canada">Canada</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="simPenalty">Penalty Drama</label>
+            <select id="simPenalty">
+              <option value="normal">Normal 90 minutes</option>
+              <option value="extra">Extra time</option>
+              <option value="penalties">Penalties</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="simWindow">Broadcast Window</label>
+            <select id="simWindow">
+              <option value="prime">Prime U.S. TV window</option>
+              <option value="standard">Standard global window</option>
+              <option value="offpeak">Off-peak U.S. window</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="simAvailability">Star Availability</label>
+            <select id="simAvailability">
+              <option value="auto">Auto from current team outlook</option>
+              <option value="full">Full-strength squads</option>
+              <option value="mixed">One marquee doubt</option>
+              <option value="limited">Multiple absences / managed minutes</option>
+            </select>
+          </div>
+        </div>
+        <button class="cta-btn" id="simulateBtn">Run Forecast</button>
+      </div>
+      <div class="result-stack">
+        <div class="sim-result">
+          <div class="mini-label">Projected Global Viewers</div>
+          <h3 id="simProjected">--</h3>
+          <p id="simNarrative">Choose a matchup to generate a forecast.</p>
+        </div>
+        <div class="feature-grid">
+          <div class="mini-panel">
+            <div class="mini-label">English TV</div>
+            <div class="mini-value" id="simEnglish">--</div>
+            <div class="mini-copy">Indicative U.S. English-language reach potential</div>
+          </div>
+          <div class="mini-panel">
+            <div class="mini-label">Spanish TV</div>
+            <div class="mini-value" id="simSpanish">--</div>
+            <div class="mini-copy">Indicative U.S. Spanish-language upside</div>
+          </div>
+          <div class="mini-panel">
+            <div class="mini-label">Inventory Tier</div>
+            <div class="mini-value" id="simTier">--</div>
+            <div class="mini-copy">How broadcasters should price the match</div>
+          </div>
+        </div>
+      </div>
+      </div>
+      <div class="signal-grid">
+        <div class="signal-card" id="simHomeSignal"></div>
+        <div class="signal-card" id="simAwaySignal"></div>
+        <div class="signal-card">
+          <div class="mini-label">2026 Signal Blend</div>
+          <h4 id="simSignalHeadline">Forecast inputs</h4>
+          <div class="signal-method-copy" id="simSignalNarrative">This model blends historical audience, current FIFA rank, team popularity, recent form, and expected star availability.</div>
+          <div class="signal-metrics">
+            <div class="signal-pill">
+              <strong id="simQualityLift">--</strong>
+              <span>Quality lift</span>
+            </div>
+            <div class="signal-pill">
+              <strong id="simStarLift">--</strong>
+              <span>Star pull</span>
+            </div>
+            <div class="signal-pill">
+              <strong id="simFormLift">--</strong>
+              <span>Form lift</span>
+            </div>
+            <div class="signal-pill">
+              <strong id="simAvailLift">--</strong>
+              <span>Availability</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="spotlight-deck">
+        <div class="player-spotlight-card" id="simHomeSpotlight"></div>
+        <div class="player-spotlight-card" id="simAwaySpotlight"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section id="rivalries">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-head-copy">
+        <div class="section-label">Rivalries And Drama</div>
+        <h2 class="section-title">Which Matches Overperform?</h2>
+        <p class="section-desc">Some fixtures behave bigger than the teams alone would suggest. Rivalry history, elimination stakes and late-match chaos create premium audience events.</p>
+      </div>
+      <div class="section-badge">
+        <div class="section-badge-label">Premiums</div>
+        <div class="section-badge-value">Indexed</div>
+      </div>
+    </div>
+    <div class="charts-2col">
+      <div class="panel">
+        <div class="chart-title">Rivalry Index — Overperformance vs Team Baseline</div>
+        <div class="chart-wrap"><canvas id="chartRivalries"></canvas></div>
+      </div>
+      <div class="panel">
+        <div class="chart-title">Knockout Drama Tracker — Teams Most Linked To ET/Penalties</div>
+        <div class="chart-wrap"><canvas id="chartDramaTeams"></canvas></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section id="timeline">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-head-copy">
+        <div class="section-label">Story Mode</div>
+        <h2 class="section-title">A Timeline Of Audience Surges</h2>
+        <p class="section-desc">The World Cup’s audience story is not flat. Each tournament generated its own defining audience spike, driven by hosts, iconic collapses, and unforgettable knockout nights.</p>
+      </div>
+      <div class="section-badge">
+        <div class="section-badge-label">Arc</div>
+        <div class="section-badge-value">5 eras</div>
+      </div>
+    </div>
+    <div class="timeline-scrolly">
+      <div class="timeline-spotlight" id="timelineSpotlight"></div>
+      <div class="timeline" id="timelineList"></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section id="map">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-head-copy">
+        <div class="section-label">Geographic Map</div>
+        <h2 class="section-title">Audience Hotspots And 2026 Host Geography</h2>
+        <p class="section-desc">Track where audience intensity has historically clustered and how the 2026 host network spreads projected concentration across North America.</p>
+      </div>
+      <div class="section-badge">
+        <div class="section-badge-label">Cities</div>
+        <div class="section-badge-value">16 hosts</div>
+      </div>
+    </div>
+    <div class="map-shell">
+      <div class="map-panel">
+        <div class="map-filter" id="mapFilters">
+          <button class="map-btn active" data-map="historical">Historical Hotspots</button>
+          <button class="map-btn" data-map="hosts2026">2026 Host Locations</button>
+          <button class="map-btn" data-map="projected">Projected Concentration</button>
+        </div>
+        <svg class="na-map" id="naMap" viewBox="0 0 820 520" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="World Cup audience map">
+          <defs>
+            <linearGradient id="landFill" x1="112" y1="84" x2="701" y2="438" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#1c7142"/>
+              <stop offset="1" stop-color="#114228"/>
+            </linearGradient>
+          </defs>
+          <path d="M120 159C146 130 190 101 248 95C286 91 327 85 372 94C418 103 476 99 527 114C577 129 627 153 665 187C703 221 711 265 687 297C659 333 650 371 603 392C558 413 509 425 455 430C398 436 338 446 284 435C224 423 172 404 142 366C108 324 94 278 96 242C98 205 102 179 120 159Z" fill="url(#landFill)" stroke="rgba(255,255,255,0.18)" stroke-width="2"/>
+          <path d="M165 309C196 285 252 274 312 271C380 267 444 273 505 286C562 298 605 319 633 344" stroke="rgba(255,255,255,0.1)" stroke-width="1.5" stroke-dasharray="6 8"/>
+          <path d="M205 198C231 180 283 166 350 161C435 154 530 168 602 197" stroke="rgba(255,255,255,0.1)" stroke-width="1.5" stroke-dasharray="6 8"/>
+          <g id="mapPoints"></g>
+        </svg>
+      </div>
+      <div class="map-side">
+        <div class="panel">
+          <div class="chart-title" id="mapSideTitle">Historical Audience Hotspots</div>
+          <div class="map-list" id="mapList"></div>
+        </div>
+        <div class="feature-grid" style="margin-top:0;">
+          <div class="mini-panel">
+            <div class="mini-label">Historical Peak City</div>
+            <div class="mini-value">Al Rayyan</div>
+            <div class="mini-copy">Highest cumulative modeled audience in the current city aggregation.</div>
+          </div>
+          <div class="mini-panel">
+            <div class="mini-label">U.S. 2026 Hosts</div>
+            <div class="mini-value">11</div>
+            <div class="mini-copy">Most of the tournament footprint sits inside the United States.</div>
+          </div>
+          <div class="mini-panel">
+            <div class="mini-label">Projected Core</div>
+            <div class="mini-value">NY/NJ</div>
+            <div class="mini-copy">Final host and likely top concentration point for 2026 inventory value.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section id="tournaments">
+  <div class="container">
+    <div class="section-label">Tournament Deep Dive</div>
+    <h2 class="section-title">By Tournament</h2>
+    <p class="section-desc">Select a World Cup to explore its viewership arc across all 64 matches, from opening kick-off to the final whistle.</p>
+
+    <div class="year-cards" id="yearCards">
+      <div class="year-card active" data-year="2010">
+        <div class="yc-year">2010</div>
+        <div class="yc-host">🇿🇦 South Africa</div>
+        <div class="yc-stat"><span class="yc-stat-label">Total Viewers</span><span class="yc-stat-val">11.35B</span></div>
+        <div class="yc-stat"><span class="yc-stat-label">Avg / Match</span><span class="yc-stat-val">177M</span></div>
+        <div class="yc-stat"><span class="yc-stat-label">Attendance Rate</span><span class="yc-stat-val">90.5%</span></div>
+        <div class="yc-bar"><div class="yc-bar-fill" style="width:83%"></div></div>
+      </div>
+      <div class="year-card" data-year="2014">
+        <div class="yc-year">2014</div>
+        <div class="yc-host">🇧🇷 Brazil</div>
+        <div class="yc-stat"><span class="yc-stat-label">Total Viewers</span><span class="yc-stat-val">11.13B</span></div>
+        <div class="yc-stat"><span class="yc-stat-label">Avg / Match</span><span class="yc-stat-val">174M</span></div>
+        <div class="yc-stat"><span class="yc-stat-label">Attendance Rate</span><span class="yc-stat-val">94.2%</span></div>
+        <div class="yc-bar"><div class="yc-bar-fill" style="width:81%"></div></div>
+      </div>
+      <div class="year-card" data-year="2018">
+        <div class="yc-year">2018</div>
+        <div class="yc-host">🇷🇺 Russia</div>
+        <div class="yc-stat"><span class="yc-stat-label">Total Viewers</span><span class="yc-stat-val">11.30B</span></div>
+        <div class="yc-stat"><span class="yc-stat-label">Avg / Match</span><span class="yc-stat-val">177M</span></div>
+        <div class="yc-stat"><span class="yc-stat-label">Attendance Rate</span><span class="yc-stat-val">98.2%</span></div>
+        <div class="yc-bar"><div class="yc-bar-fill" style="width:82%"></div></div>
+      </div>
+      <div class="year-card" data-year="2022">
+        <div class="yc-year">2022</div>
+        <div class="yc-host">🇶🇦 Qatar</div>
+        <div class="yc-stat"><span class="yc-stat-label">Total Viewers</span><span class="yc-stat-val">9.70B</span></div>
+        <div class="yc-stat"><span class="yc-stat-label">Avg / Match</span><span class="yc-stat-val">152M</span></div>
+        <div class="yc-stat"><span class="yc-stat-label">Attendance Rate</span><span class="yc-stat-val">97.4%</span></div>
+        <div class="yc-bar"><div class="yc-bar-fill" style="width:71%"></div></div>
+      </div>
+    </div>
+
+    <div class="panel" style="margin-top:1.5rem;">
+      <div class="chart-title" id="tournamentChartTitle">2010 — Match-by-Match Global Viewership (Millions)</div>
+      <div class="chart-wrap" style="height:320px;"><canvas id="chartTournamentLine"></canvas></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  DATA SOURCE: World Cup Master Analytics Dataset 2010–2022 &nbsp;·&nbsp; 256 MATCHES &nbsp;·&nbsp; ESTIMATED GLOBAL VIEWERS MODEL
+</footer>
+
+<script>
+const DATA_URL = 'world_cup_master_analytics_2010_2022.json';
+const PLAYER_SPOTLIGHT_URL = 'team_player_spotlights_2026.json';
+
+async function loadWorldCupData() {
+  try {
+    const [dataResponse, spotlightResponse] = await Promise.all([
+      fetch(DATA_URL),
+      fetch(PLAYER_SPOTLIGHT_URL)
+    ]);
+    if (!dataResponse.ok) throw new Error(`Data HTTP ${dataResponse.status}`);
+    if (!spotlightResponse.ok) throw new Error(`Spotlight HTTP ${spotlightResponse.status}`);
+    const [raw, spotlightDb] = await Promise.all([
+      dataResponse.json(),
+      spotlightResponse.json()
+    ]);
+    initDashboard(raw, spotlightDb);
+  } catch (error) {
+    console.error('Failed to load World Cup JSON data:', error);
+    const message = document.createElement('div');
+    message.style.maxWidth = '900px';
+    message.style.margin = '120px auto 40px';
+    message.style.padding = '1rem 1.25rem';
+    message.style.border = '1px solid rgba(255, 212, 71, 0.2)';
+    message.style.background = 'rgba(8, 28, 18, 0.9)';
+    message.style.color = '#f5f1e8';
+    message.style.fontFamily = "'Space Mono', monospace";
+    message.style.fontSize = '0.8rem';
+    message.innerHTML = 'Data files could not be loaded. Open this page through a local or hosted web server so <code>fetch()</code> can read the local JSON files used by the dashboard.';
+    document.body.prepend(message);
+  }
+}
+
+function initDashboard(RAW, PLAYER_SPOTLIGHT_DB) {
+const FULL_MATCHES = RAW;
+
+function formatBillionsFromMillions(valueM, digits = 1) {
+  return `${(valueM / 1000).toFixed(digits)}B`;
+}
+
+function formatMillions(valueM, digits = 0) {
+  return `${valueM.toFixed(digits)}M`;
+}
+
+function formatPercent(value, digits = 1) {
+  return `${value.toFixed(digits)}%`;
+}
+
+function computeDashboardSummary(raw) {
+  const totalMatches = raw.length;
+  const totalViewersM = raw.reduce((sum, d) => sum + (Number(d.viewers) || 0), 0);
+  const peakMatch = raw.reduce((best, d) => (!best || Number(d.viewers) > Number(best.viewers) ? d : best), null);
+  const dramaMatches = raw.filter(d => d.extra_time || d.penalties).length;
+
+  const validAttendance = raw.filter(d => Number.isFinite(Number(d.att_ratio)));
+  const avgFillRate = validAttendance.length
+    ? (validAttendance.reduce((sum, d) => sum + Number(d.att_ratio), 0) / validAttendance.length) * 100
+    : 0;
+
+  const avgViewersPerMatch = totalMatches ? totalViewersM / totalMatches : 0;
+
+  return {
+    totalMatches,
+    totalViewersM,
+    peakMatch,
+    dramaMatches,
+    avgFillRate,
+    avgViewersPerMatch,
+  };
+}
+
+function computeYearSummary(raw) {
+  const years = [...new Set(raw.map(d => Number(d.year)))].sort((a, b) => a - b);
+  const out = {};
+
+  years.forEach(year => {
+    const subset = raw.filter(d => Number(d.year) === year);
+    const totalViewersM = subset.reduce((sum, d) => sum + (Number(d.viewers) || 0), 0);
+    const avgViewersM = subset.length ? totalViewersM / subset.length : 0;
+
+    const validAttendance = subset.filter(d => Number.isFinite(Number(d.att_ratio)));
+    const avgFillRate = validAttendance.length
+      ? (validAttendance.reduce((sum, d) => sum + Number(d.att_ratio), 0) / validAttendance.length) * 100
+      : 0;
+
+    const peakMatch = subset.reduce((best, d) => (!best || Number(d.viewers) > Number(best.viewers) ? d : best), null);
+
+    out[year] = {
+      host: subset[0]?.host || '',
+      matches: subset.length,
+      totalViewersM,
+      avgViewersM,
+      avgFillRate,
+      peakMatch,
+    };
+  });
+
+  return out;
+}
+
+const DASH_SUMMARY = computeDashboardSummary(RAW);
+const YEAR_SUMMARY = computeYearSummary(RAW);
+
+function normalizeStageName(stage) {
+  const value = String(stage || '').toLowerCase().trim();
+  if (value === 'group stage') return 'group stage';
+  if (value === 'round of 16') return 'round of 16';
+  if (value === 'quarter-finals' || value === 'quarterfinals' || value === 'quarter final') return 'quarter-finals';
+  if (value === 'semi-finals' || value === 'semifinals' || value === 'semi final') return 'semi-finals';
+  if (value === 'third-place match' || value === 'third place match') return 'third-place match';
+  if (value === 'final') return 'final';
+  return value;
+}
+
+function computeStageSummary(raw) {
+  const base = {
+    'group stage': [],
+    'round of 16': [],
+    'quarter-finals': [],
+    'semi-finals': [],
+    'third-place match': [],
+    'final': [],
+  };
+
+  raw.forEach(row => {
+    const stage = normalizeStageName(row.stage);
+    if (base[stage]) base[stage].push(Number(row.viewers) || 0);
+  });
+
+  return Object.fromEntries(
+    Object.entries(base).map(([stage, values]) => [
+      stage,
+      {
+        avg: values.length ? Number((values.reduce((a, b) => a + b, 0) / values.length).toFixed(1)) : 0,
+        max: values.length ? Number(Math.max(...values).toFixed(1)) : 0,
+        count: values.length,
+      }
+    ])
+  );
+}
+
+function computeViewerDistribution(raw) {
+  const labels = ['<150','150-175','175-200','200-250','250-300','300-400','>400'];
+  const counts = [0, 0, 0, 0, 0, 0, 0];
+
+  raw.forEach(row => {
+    const v = Number(row.viewers) || 0;
+    if (v < 150) counts[0]++;
+    else if (v < 175) counts[1]++;
+    else if (v < 200) counts[2]++;
+    else if (v < 250) counts[3]++;
+    else if (v < 300) counts[4]++;
+    else if (v <= 400) counts[5]++;
+    else counts[6]++;
+  });
+
+  return { labels, counts };
+}
+
+function computeStageEvolution(raw) {
+  const labels = [...new Set(raw.map(d => String(d.year)))].sort();
+  const group = [];
+  const semi = [];
+  const final = [];
+
+  labels.forEach(year => {
+    const yearRows = raw.filter(d => String(d.year) === year);
+    const avgForStage = (stageName) => {
+      const subset = yearRows.filter(d => normalizeStageName(d.stage) === stageName);
+      if (!subset.length) return 0;
+      return Number((subset.reduce((sum, d) => sum + (Number(d.viewers) || 0), 0) / subset.length).toFixed(1));
+    };
+
+    group.push(avgForStage('group stage'));
+    semi.push(avgForStage('semi-finals'));
+    final.push(avgForStage('final'));
+  });
+
+  return { labels, group, semi, final };
+}
+
+const STAGE_SUMMARY = computeStageSummary(RAW);
+const VIEWER_DISTRIBUTION = computeViewerDistribution(RAW);
+const STAGE_EVOLUTION = computeStageEvolution(RAW);
+
+const YEAR_CHART_SERIES = {
+  years: Object.keys(YEAR_SUMMARY).map(Number).sort((a, b) => a - b),
+  labels: Object.keys(YEAR_SUMMARY).map(Number).sort((a, b) => a - b).map(String),
+  totalsB: Object.keys(YEAR_SUMMARY).map(Number).sort((a, b) => a - b).map(year => Number((YEAR_SUMMARY[year].totalViewersM / 1000).toFixed(2))),
+  avgViewersM: Object.keys(YEAR_SUMMARY).map(Number).sort((a, b) => a - b).map(year => Number(YEAR_SUMMARY[year].avgViewersM.toFixed(1))),
+  fillRates: Object.keys(YEAR_SUMMARY).map(Number).sort((a, b) => a - b).map(year => Number(YEAR_SUMMARY[year].avgFillRate.toFixed(1))),
+};
+
+function renderTopStats() {
+  const heroStatNums = document.querySelectorAll('.hero .hero-stat-num');
+  if (heroStatNums.length >= 4) {
+    heroStatNums[0].textContent = DASH_SUMMARY.totalMatches;
+    heroStatNums[1].textContent = formatBillionsFromMillions(DASH_SUMMARY.totalViewersM, 1);
+    heroStatNums[2].textContent = formatMillions(Number(DASH_SUMMARY.peakMatch?.viewers || 0), 0);
+    heroStatNums[3].textContent = DASH_SUMMARY.dramaMatches;
+  }
+
+  const boardScores = document.querySelectorAll('.hero-board-score');
+  if (boardScores.length >= 2) {
+    boardScores[0].textContent = `${formatBillionsFromMillions(DASH_SUMMARY.totalViewersM, 1)} : ${DASH_SUMMARY.totalMatches}`;
+    boardScores[1].textContent = formatMillions(Number(DASH_SUMMARY.peakMatch?.viewers || 0), 0);
+  }
+
+  const overviewCards = document.querySelectorAll('#overview .kpi-card');
+  if (overviewCards.length >= 4) {
+    const avgVal = overviewCards[0].querySelector('.kpi-val');
+    const avgSub = overviewCards[0].querySelector('.kpi-sub');
+    if (avgVal) avgVal.textContent = formatMillions(DASH_SUMMARY.avgViewersPerMatch, 0);
+    if (avgSub) avgSub.textContent = `Across all ${DASH_SUMMARY.totalMatches} matches`;
+
+    const peakVal = overviewCards[1].querySelector('.kpi-val');
+    const peakSub = overviewCards[1].querySelector('.kpi-sub');
+    if (peakVal) peakVal.textContent = formatMillions(Number(DASH_SUMMARY.peakMatch?.viewers || 0), 0);
+    if (peakSub && DASH_SUMMARY.peakMatch) {
+      peakSub.textContent = `${DASH_SUMMARY.peakMatch.home} vs ${DASH_SUMMARY.peakMatch.away} — ${DASH_SUMMARY.peakMatch.year}`;
+    }
+
+    const fillVal = overviewCards[2].querySelector('.kpi-val');
+    if (fillVal) fillVal.textContent = formatPercent(DASH_SUMMARY.avgFillRate, 1);
+
+    const dramaVal = overviewCards[3].querySelector('.kpi-val');
+    if (dramaVal) dramaVal.textContent = DASH_SUMMARY.dramaMatches;
+  }
+
+  const yearCards = document.querySelectorAll('#yearCards .year-card');
+  yearCards.forEach(card => {
+    const year = Number(card.dataset.year);
+    const yearData = YEAR_SUMMARY[year];
+    if (!yearData) return;
+
+    const hostNode = card.querySelector('.yc-host');
+    if (hostNode) {
+      const currentText = hostNode.textContent || '';
+      const flagPrefix = currentText.includes(' ') ? currentText.split(' ')[0] : '';
+      hostNode.textContent = flagPrefix ? `${flagPrefix} ${yearData.host}` : yearData.host;
+    }
+
+    const statVals = card.querySelectorAll('.yc-stat-val');
+    if (statVals.length >= 3) {
+      statVals[0].textContent = formatBillionsFromMillions(yearData.totalViewersM, 2);
+      statVals[1].textContent = formatMillions(yearData.avgViewersM, 0);
+      statVals[2].textContent = formatPercent(yearData.avgFillRate, 1);
+    }
+
+    const barFill = card.querySelector('.yc-bar-fill');
+    if (barFill) {
+      const width = Math.max(18, Math.min(100, yearData.avgFillRate));
+      barFill.style.width = `${width}%`;
+    }
+  });
+}
+
+renderTopStats();
+
+Chart.defaults.color = '#8a8a8a';
+Chart.defaults.font.family = "'Space Mono', monospace";
+Chart.defaults.font.size = 10;
+
+const GOLD = '#f5c518';
+const BLUE = '#3d9fd4';
+const GREEN = '#3dbd6e';
+const ORANGE = '#f5803e';
+const RED = '#e84040';
+const OPENING_MATCH_KICKOFF = '2026-06-11T13:00:00-06:00';
+const USA_FIRST_MATCH_KICKOFF = '2026-06-12T18:00:00-07:00';
+const FINAL_MATCHDAY = '2026-07-19T00:00:00-04:00';
+
+const DRIVER_DATA = {
+  labels: ['Standard Match','Host Team','Opening Match','Extra Time','Penalty Shootout'],
+  values: [157.7, 248.9, 283.5, 220.8, 259.7],
+};
+const CITY_DATA = {
+  labels: ['Al Rayyan','Johannesburg','Moscow','Doha','Al Khor','Lusail','Cape Town','Port Elizabeth'],
+  values: [3.224, 2.805, 2.321, 2.121, 1.81, 1.587, 1.56, 1.391],
+};
+const FORECAST_2026 = {
+  matches: 104,
+  total: 17.072,
+  avg: 164.2,
+  knockoutAvg: 205.0,
+  peak: 620,
+  stageTotals: {
+    'Group Stage': 10.512,
+    'Round of 32': 2.912,
+    'Round of 16': 1.656,
+    'Quarter-Finals': 1.004,
+    'Semi-Finals': 0.598,
+    'Third-Place': 0.176,
+    'Final': 0.214,
+  }
+};
+const FIFA_TOP10_RANKED = [
+  { team:'Spain', rank:1, matches:18, total:3214.8, avg:178.6, peak:302.4, peakMatch:'Germany vs Spain', peakYear:2010 },
+  { team:'Argentina', rank:2, matches:23, total:4236.2, avg:184.2, peak:344.3, peakMatch:'Netherlands vs Argentina', peakYear:2014 },
+  { team:'France', rank:3, matches:22, total:3895.7, avg:177.1, peak:299.7, peakMatch:'France vs Belgium', peakYear:2018 },
+  { team:'England', rank:4, matches:19, total:3330.3, avg:175.3, peak:323.7, peakMatch:'Croatia vs England', peakYear:2018 },
+  { team:'Brazil', rank:5, matches:22, total:4388.5, avg:199.5, peak:391.1, peakMatch:'Brazil vs Germany', peakYear:2014 },
+  { team:'Portugal', rank:6, matches:16, total:2537.9, avg:158.6, peak:205.7, peakMatch:'Spain vs Portugal', peakYear:2010 },
+  { team:'Netherlands', rank:7, matches:19, total:3730.3, avg:196.3, peak:344.3, peakMatch:'Netherlands vs Argentina', peakYear:2014 },
+  { team:'Morocco', rank:8, matches:10, total:1627.1, avg:162.7, peak:243.4, peakMatch:'France vs Morocco', peakYear:2022 },
+  { team:'Belgium', rank:9, matches:15, total:2634.4, avg:175.6, peak:299.7, peakMatch:'France vs Belgium', peakYear:2018 },
+  { team:'Germany', rank:10, matches:20, total:3668.8, avg:183.4, peak:391.1, peakMatch:'Brazil vs Germany', peakYear:2014 },
+];
+const FORECAST_MATCHUPS = [
+  { home:'United States', away:'Paraguay', stage:'group', host:'USA', mode:'normal', window:'prime', availability:'auto', note:'Host lift plus U.S. opening-week urgency.' },
+  { home:'Germany', away:'Ecuador', stage:'group', host:'USA', mode:'normal', window:'standard', availability:'auto', note:'Big European brand with strong Latin crossover.' },
+  { home:'England', away:'Croatia', stage:'group', host:'USA', mode:'normal', window:'prime', availability:'auto', note:'Recent knockout history keeps the fixture premium.' },
+  { home:'Spain', away:'Uruguay', stage:'group', host:'USA', mode:'normal', window:'standard', availability:'auto', note:'Elite-brand clash with broad bilingual appeal.' },
+  { home:'Brazil', away:'Morocco', stage:'group', host:'USA', mode:'normal', window:'standard', availability:'auto', note:'Brazil scale plus Morocco’s post-2022 attention.' },
+  { home:'United States', away:'Australia', stage:'group', host:'USA', mode:'normal', window:'prime', availability:'auto', note:'Host market, English-language upside and favorable slot.' },
+  { home:'Colombia', away:'Portugal', stage:'group', host:'USA', mode:'normal', window:'standard', availability:'auto', note:'Strong Iberian and Latin diaspora pull.' },
+  { home:'Netherlands', away:'Japan', stage:'group', host:'Canada', mode:'normal', window:'standard', availability:'auto', note:'Stable global brands with a high baseline.' },
+  { home:'Mexico', away:'South Africa', stage:'group', host:'Mexico', mode:'normal', window:'prime', availability:'auto', note:'Tournament opener premium and Mexico’s home-market power.' },
+  { home:'Argentina', away:'Austria', stage:'group', host:'USA', mode:'normal', window:'standard', availability:'auto', note:'Argentina alone can elevate a standard group fixture.' },
+  { home:'France', away:'Senegal', stage:'group', host:'USA', mode:'normal', window:'standard', availability:'auto', note:'Reunion narrative and strong Francophone attention.' },
+  { home:'Mexico', away:'South Korea', stage:'group', host:'USA', mode:'normal', window:'standard', availability:'auto', note:'Mexico still lifts the Spanish-language floor.' },
+];
+const BROADCAST_OUTLOOK = [
+  { outlet:'FOX', inventory:70, expectation:'Flagship English windows, most U.S. matches, knockout tentpoles and the biggest ad loads.' },
+  { outlet:'FS1', inventory:34, expectation:'High-volume shoulder inventory; strong for weekday depth, doubleheaders and primetime overflow.' },
+  { outlet:'FOX One', inventory:104, expectation:'Full-match authenticated streaming; heavy second-screen usage and replay catch-up.' },
+  { outlet:'Tubi', inventory:2, expectation:'Free simulcast spikes around tentpole entry points like the opener and U.S. opener.' },
+  { outlet:'Telemundo', inventory:92, expectation:'Main Spanish-language home with the broadest reach for Mexico, U.S. Latino and marquee global matches.' },
+  { outlet:'Universo', inventory:12, expectation:'Overflow network for secondary Spanish-language windows and schedule congestion.' },
+  { outlet:'Peacock', inventory:104, expectation:'Complete Spanish-language streaming layer; useful for always-on access, mobile viewing and cord-cutters.' },
+];
+const SCENARIO_FORECAST = [
+  { scenario:'Conservative', total:15.8, avg:151.9, note:'Expanded inventory dilutes average audience more sharply.' },
+  { scenario:'Base', total:17.1, avg:164.2, note:'Balanced scenario used across the current dashboard.' },
+  { scenario:'Aggressive', total:18.6, avg:178.8, note:'Host-market lift and premium knockout traction outperform baseline.' },
+];
+const HOST_COUNTRY_IMPACT = [
+  { host:'United States', matches:78, total:12.9, share:75.6 },
+  { host:'Mexico', matches:13, total:2.3, share:13.5 },
+  { host:'Canada', matches:13, total:1.9, share:10.9 },
+];
+const TEAM_PROFILE_DATA = [
+  { team:'Brazil', avg:199.5, matches:22, peak:391.1, peakMatch:'Brazil vs Germany', total:4.39, forecast:'Still the cleanest audience magnet in almost any stage.', tier:'Tier A global draw' },
+  { team:'Argentina', avg:184.2, matches:23, peak:344.3, peakMatch:'Netherlands vs Argentina', total:4.24, forecast:'Defending-champion gravity can turn normal fixtures into marquee windows.', tier:'Tier A global draw' },
+  { team:'United States', avg:157.5, matches:12, peak:213.4, peakMatch:'United States vs Ghana', total:1.89, forecast:'Host effect raises English-language value materially in 2026.', tier:'Tier A U.S. inventory' },
+  { team:'Mexico', avg:161.2, matches:15, peak:206.9, peakMatch:'Argentina vs Mexico', total:2.42, forecast:'Spanish-language floor is high even before knockout premium.', tier:'Tier A Spanish-language' },
+  { team:'England', avg:175.3, matches:19, peak:323.7, peakMatch:'Croatia vs England', total:3.33, forecast:'Reliable transatlantic audience with big upside in late rounds.', tier:'Tier A European brand' },
+  { team:'Morocco', avg:162.7, matches:10, peak:243.4, peakMatch:'France vs Morocco', total:1.63, forecast:'2022 momentum gives Morocco emerging premium status.', tier:'Tier B momentum team' },
+];
+const SIM_TEAM_POOL = ['Argentina','Australia','Belgium','Brazil','Canada','Colombia','Croatia','England','France','Germany','Japan','Mexico','Morocco','Netherlands','Paraguay','Portugal','South Korea','Spain','United States','Uruguay'];
+const SIM_TEAM_BASE = {
+  Argentina:184.2, Australia:148.6, Austria:146.2, Belgium:175.6, Brazil:199.5, Canada:150.0, Colombia:178.9, Croatia:192.4, Ecuador:168.4, England:175.3, France:177.1, Germany:183.4, Japan:158.9, Mexico:161.2, Morocco:162.7, Netherlands:196.3, Paraguay:189.0, Portugal:158.6, Senegal:164.8, 'South Africa':149.1, 'South Korea':151.5, Spain:178.6, 'United States':157.5, Uruguay:180.0
+};
+const TEAM_SIGNAL_MODEL = {
+  Argentina: { fifaRank:2, popularity:99, form:92, starPower:97, availability:0.88, stars:['Lionel Messi','Julian Alvarez','Lautaro Martinez'], note:'Defending champions still deliver the strongest appointment-viewing ceiling.' },
+  Australia: { fifaRank:24, popularity:68, form:79, starPower:63, availability:0.93, stars:['Mat Ryan','Jackson Irvine','Awer Mabil'], note:'Competitive but with a lighter star layer than the elite brands.' },
+  Austria: { fifaRank:23, popularity:66, form:80, starPower:62, availability:0.92, stars:['David Alaba','Marcel Sabitzer','Konrad Laimer'], note:'Solid European profile with less global celebrity pull.' },
+  Belgium: { fifaRank:9, popularity:82, form:84, starPower:83, availability:0.88, stars:['Kevin De Bruyne','Jeremy Doku','Romelu Lukaku'], note:'Still respected globally, though availability risk matters more than before.' },
+  Brazil: { fifaRank:5, popularity:100, form:89, starPower:95, availability:0.90, stars:['Vinicius Junior','Rodrygo','Raphinha'], note:'The cleanest pure-audience magnet outside host or final effects.' },
+  Canada: { fifaRank:31, popularity:72, form:76, starPower:70, availability:0.90, stars:['Alphonso Davies','Jonathan David','Stephen Eustaquio'], note:'Host boost matters more than raw global rank.' },
+  Colombia: { fifaRank:12, popularity:85, form:88, starPower:79, availability:0.90, stars:['Luis Diaz','James Rodriguez','Jhon Duran'], note:'Strong form and diaspora value lift broadcast upside.' },
+  Croatia: { fifaRank:10, popularity:78, form:84, starPower:82, availability:0.88, stars:['Luka Modric','Josko Gvardiol','Mateo Kovacic'], note:'Knockout credibility stays high but age curves matter.' },
+  Ecuador: { fifaRank:28, popularity:70, form:78, starPower:66, availability:0.91, stars:['Moises Caicedo','Piero Hincapie','Kendry Paez'], note:'Emerging talent gives Ecuador more pull than a typical mid-tier side.' },
+  England: { fifaRank:4, popularity:94, form:90, starPower:92, availability:0.91, stars:['Jude Bellingham','Bukayo Saka','Harry Kane'], note:'Strong transatlantic draw with consistent premium-window power.' },
+  France: { fifaRank:3, popularity:95, form:91, starPower:95, availability:0.90, stars:['Kylian Mbappe','Ousmane Dembele','Aurelien Tchouameni'], note:'Elite quality and star power keep France in the top audience band.' },
+  Germany: { fifaRank:10, popularity:93, form:88, starPower:90, availability:0.90, stars:['Jamal Musiala','Florian Wirtz','Kai Havertz'], note:'Heavy brand equity and young stars give Germany a high TV floor.' },
+  Japan: { fifaRank:16, popularity:80, form:85, starPower:74, availability:0.93, stars:['Takefusa Kubo','Kaoru Mitoma','Wataru Endo'], note:'Global fan interest and consistent tournament relevance keep Japan valuable.' },
+  Mexico: { fifaRank:15, popularity:90, form:82, starPower:75, availability:0.91, stars:['Santiago Gimenez','Edson Alvarez','Raul Jimenez'], note:'Spanish-language demand remains huge regardless of stage.' },
+  Morocco: { fifaRank:8, popularity:84, form:89, starPower:81, availability:0.89, stars:['Achraf Hakimi','Sofyan Amrabat','Brahim Diaz'], note:'Momentum from 2022 still creates an audience premium.' },
+  Netherlands: { fifaRank:6, popularity:89, form:87, starPower:84, availability:0.90, stars:['Virgil van Dijk','Xavi Simons','Cody Gakpo'], note:'Reliable European pull with strong tactical-brand recognition.' },
+  Paraguay: { fifaRank:44, popularity:65, form:74, starPower:58, availability:0.92, stars:['Miguel Almiron','Julio Enciso','Gustavo Gomez'], note:'Useful spoiler profile, but viewership mostly comes from the opponent.' },
+  Portugal: { fifaRank:7, popularity:91, form:88, starPower:91, availability:0.87, stars:['Cristiano Ronaldo','Bruno Fernandes','Rafael Leao'], note:'Huge star pull, but availability volatility is part of the forecast.' },
+  Senegal: { fifaRank:17, popularity:77, form:83, starPower:73, availability:0.90, stars:['Sadio Mane','Kalidou Koulibaly','Ismaila Sarr'], note:'Large regional following gives Senegal a healthy cross-market bump.' },
+  'South Africa': { fifaRank:58, popularity:61, form:70, starPower:52, availability:0.93, stars:['Percy Tau','Teboho Mokoena','Lyle Foster'], note:'Opening-match context would matter more than standalone brand strength.' },
+  'South Korea': { fifaRank:18, popularity:84, form:81, starPower:82, availability:0.86, stars:['Son Heung-min','Lee Kang-in','Kim Min-jae'], note:'Heavy star concentration means availability changes the projection materially.' },
+  Spain: { fifaRank:1, popularity:93, form:94, starPower:92, availability:0.91, stars:['Lamine Yamal','Pedri','Nico Williams'], note:'Current No. 1 quality signal with elite young-star magnetism.' },
+  'United States': { fifaRank:14, popularity:86, form:87, starPower:78, availability:0.92, stars:['Christian Pulisic','Weston McKennie','Tim Weah'], note:'Host status plus Pochettino-era momentum raises English-language value.' },
+  Uruguay: { fifaRank:13, popularity:83, form:86, starPower:83, availability:0.89, stars:['Federico Valverde','Darwin Nunez','Ronald Araujo'], note:'High-intensity profile with real upside in premium stages.' },
+};
+const RIVALRY_DATA = [
+  { matchup:'Brazil vs Germany', premium:1.34 },
+  { matchup:'Argentina vs Netherlands', premium:1.27 },
+  { matchup:'England vs Croatia', premium:1.23 },
+  { matchup:'France vs Belgium', premium:1.21 },
+  { matchup:'Uruguay vs Ghana', premium:1.19 },
+  { matchup:'Spain vs Portugal', premium:1.12 },
+];
+const DRAMA_TEAM_DATA = [
+  { team:'Croatia', drama:5 },
+  { team:'Netherlands', drama:4 },
+  { team:'Argentina', drama:4 },
+  { team:'Morocco', drama:3 },
+  { team:'Japan', drama:3 },
+  { team:'England', drama:3 },
+];
+const TIMELINE_DATA = [
+  { year:'2010', title:'Host uplift in South Africa', copy:'The first modern social-era World Cup built a strong baseline from host-team appearances, opening ceremony attention and rising global distribution.', stat:'Peak 303M', match:'Uruguay vs Netherlands', substat:'11.35B total audience', stage:'Host wave' },
+  { year:'2014', title:'Brazil-Germany became a television event', copy:'The semi-final collapse of the host nation created the most explosive traditional television spike in the dataset and redefined the value of knockout catastrophe.', stat:'Peak 391M', match:'Brazil vs Germany', substat:'367.7M semi-final avg', stage:'Shock peak' },
+  { year:'2018', title:'Russia’s host run reshaped the bracket', copy:'Russia staying alive deep into the knockout phase materially raised late-round audience expectations and showed how host overperformance changes global media value.', stat:'Peak 363M', match:'Russia vs Croatia', substat:'240.2M knockout avg', stage:'Host breakout' },
+  { year:'2022', title:'The opener exploded in Qatar', copy:'The Qatar opener produced a massive modeled spike, while the tournament itself carried a lower average-per-match audience across the broader field.', stat:'Peak 550M', match:'Qatar vs Ecuador', substat:'9.70B total audience', stage:'Opening-match spike' },
+  { year:'2026', title:'North America becomes inventory-heavy', copy:'The 48-team format creates a wider premium inventory ladder. More matches lower scarcity, but the host-market distribution gives broadcasters more monetizable windows than ever before.', stat:'Forecast 17.1B', match:'Mexico opener / NYNJ final', substat:'78 U.S.-hosted matches', stage:'Expansion era' },
+];
+const MAP_LAYERS = {
+  historical: {
+    title:'Historical Audience Hotspots',
+    points:[
+      { name:'Al Rayyan', x:603, y:254, value:'3.22B', note:'Qatar host cluster and knockout density', size:24, color:'#ffd447' },
+      { name:'Johannesburg', x:500, y:325, value:'2.81B', note:'South Africa’s strongest historical hotspot', size:22, color:'#51c6ff' },
+      { name:'Moscow', x:575, y:220, value:'2.32B', note:'Russia host-stage and final-city pull', size:20, color:'#ff9a3d' },
+      { name:'Doha', x:620, y:278, value:'2.12B', note:'Dense 2022 host-city cluster', size:18, color:'#52e08c' },
+      { name:'Al Khor', x:636, y:232, value:'1.81B', note:'High-value 2022 upper-tier venue', size:16, color:'#ff5b4d' },
+    ]
+  },
+  hosts2026: {
+    title:'2026 Host Locations',
+    points:[
+      { name:'Vancouver', x:144, y:126, value:'Canada', note:'West coast Canada host', size:14, color:'#51c6ff' },
+      { name:'Seattle', x:165, y:150, value:'USA', note:'Pacific Northwest hub', size:14, color:'#ffd447' },
+      { name:'San Francisco', x:145, y:206, value:'USA', note:'Bay Area host', size:14, color:'#ffd447' },
+      { name:'Los Angeles', x:155, y:244, value:'USA', note:'USA Match 4 venue', size:16, color:'#ffd447' },
+      { name:'Guadalajara', x:215, y:308, value:'Mexico', note:'Second Mexican host site', size:14, color:'#ff9a3d' },
+      { name:'Mexico City', x:245, y:332, value:'Mexico', note:'Opening match host', size:18, color:'#ff9a3d' },
+      { name:'Monterrey', x:292, y:302, value:'Mexico', note:'Northern Mexico host', size:14, color:'#ff9a3d' },
+      { name:'Toronto', x:420, y:165, value:'Canada', note:'Canada opener city', size:16, color:'#51c6ff' },
+      { name:'Boston', x:498, y:170, value:'USA', note:'East coast group stage site', size:13, color:'#ffd447' },
+      { name:'New York New Jersey', x:520, y:185, value:'USA', note:'Final venue', size:19, color:'#ffd447' },
+      { name:'Philadelphia', x:502, y:210, value:'USA', note:'East corridor host', size:13, color:'#ffd447' },
+      { name:'Atlanta', x:474, y:270, value:'USA', note:'Southeast host', size:14, color:'#ffd447' },
+      { name:'Miami', x:520, y:338, value:'USA', note:'South Florida host', size:15, color:'#ffd447' },
+      { name:'Dallas', x:340, y:278, value:'USA', note:'Central host and likely demand engine', size:16, color:'#ffd447' },
+      { name:'Houston', x:334, y:316, value:'USA', note:'Texas dual-host cluster', size:14, color:'#ffd447' },
+      { name:'Kansas City', x:326, y:226, value:'USA', note:'Midwest host', size:13, color:'#ffd447' },
+    ]
+  },
+  projected: {
+    title:'Projected 2026 Audience Concentration',
+    points:[
+      { name:'New York New Jersey', x:520, y:185, value:'1.55B', note:'Final and late-round concentration', size:26, color:'#ffd447' },
+      { name:'Los Angeles', x:155, y:244, value:'1.28B', note:'USA opener and west coast media gravity', size:24, color:'#51c6ff' },
+      { name:'Dallas', x:340, y:278, value:'1.18B', note:'Central time-zone premium windows', size:22, color:'#52e08c' },
+      { name:'Mexico City', x:245, y:332, value:'0.98B', note:'Opening-match premium and Spanish-language value', size:20, color:'#ff9a3d' },
+      { name:'Miami', x:520, y:338, value:'0.91B', note:'Bilingual audience upside and marquee atmosphere', size:18, color:'#ff5b4d' },
+      { name:'Toronto', x:420, y:165, value:'0.72B', note:'Canada’s flagship concentration point', size:16, color:'#51c6ff' },
+    ]
+  }
+};
+
+const YEAR_DATA = Object.fromEntries(
+  Object.entries(YEAR_SUMMARY).map(([year, value]) => [year, {
+    host: value.host,
+    total: Number((value.totalViewersM / 1000).toFixed(2)),
+    avg: Number(value.avgViewersM.toFixed(1)),
+    att: Number(value.avgFillRate.toFixed(1)),
+    matches: value.matches,
+    peak: Number((value.peakMatch?.viewers || 0).toFixed(1)),
+    peaks_match: value.peakMatch ? `${value.peakMatch.home} vs ${value.peakMatch.away}` : 'N/A',
+  }])
+);
+
+const STAGE_DATA = {
+  'group stage': { avg: STAGE_SUMMARY['group stage'].avg, max: STAGE_SUMMARY['group stage'].max, count: STAGE_SUMMARY['group stage'].count, color: BLUE },
+  'round of 16': { avg: STAGE_SUMMARY['round of 16'].avg, max: STAGE_SUMMARY['round of 16'].max, count: STAGE_SUMMARY['round of 16'].count, color: GREEN },
+  'quarter-finals': { avg: STAGE_SUMMARY['quarter-finals'].avg, max: STAGE_SUMMARY['quarter-finals'].max, count: STAGE_SUMMARY['quarter-finals'].count, color: ORANGE },
+  'semi-finals': { avg: STAGE_SUMMARY['semi-finals'].avg, max: STAGE_SUMMARY['semi-finals'].max, count: STAGE_SUMMARY['semi-finals'].count, color: RED },
+  'third-place match': { avg: STAGE_SUMMARY['third-place match'].avg, max: STAGE_SUMMARY['third-place match'].max, count: STAGE_SUMMARY['third-place match'].count, color: '#888' },
+  'final': { avg: STAGE_SUMMARY['final'].avg, max: STAGE_SUMMARY['final'].max, count: STAGE_SUMMARY['final'].count, color: GOLD },
+};
+
+function getYearMatches(year) {
+  return RAW.filter(m => m.year === year).sort((a,b) => a.match_id.localeCompare(b.match_id));
+}
+
+(function(){
+  const ctx = document.getElementById('chartTournamentViewers').getContext('2d');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: YEAR_CHART_SERIES.years.map(year => `${year} ${YEAR_SUMMARY[year].host}`),
+      datasets: [{
+        label: 'Total Viewers (Billions)',
+        data: YEAR_CHART_SERIES.totalsB,
+        backgroundColor: [
+          'rgba(245,197,24,0.75)',
+          'rgba(61,159,212,0.75)',
+          'rgba(61,189,110,0.75)',
+          'rgba(245,128,62,0.75)',
+        ],
+        borderColor: [GOLD, BLUE, GREEN, ORANGE],
+        borderWidth: 1,
+        borderRadius: 1,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ` ${c.raw}B viewers` } } },
+      scales: {
+        y: { grid: { color:'rgba(255,255,255,0.05)' }, ticks: { callback: v => v+'B' } },
+        x: { grid: { display: false } }
+      }
+    }
+  });
+})();
+
+(function(){
+  const ctx = document.getElementById('chartViewersAttendance').getContext('2d');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: YEAR_CHART_SERIES.labels,
+      datasets: [
+        {
+          label: 'Avg Viewers/Match (M)',
+          data: YEAR_CHART_SERIES.avgViewersM,
+          backgroundColor: 'rgba(245,197,24,0.7)',
+          borderColor: GOLD, borderWidth:1, borderRadius:1,
+          yAxisID: 'y1',
+        },
+        {
+          label: 'Stadium Fill Rate (%)',
+          data: YEAR_CHART_SERIES.fillRates,
+          backgroundColor: 'rgba(61,159,212,0.5)',
+          borderColor: BLUE, borderWidth:1, borderRadius:1,
+          yAxisID: 'y2',
+          type: 'line',
+          tension: 0.3,
+          pointRadius: 5,
+          pointBackgroundColor: BLUE,
+        }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { labels: { boxWidth:10, padding:14 } } },
+      scales: {
+        y1: { position:'left', grid: { color:'rgba(255,255,255,0.05)' }, ticks:{ callback: v=>v+'M' } },
+        y2: { position:'right', grid:{ display:false }, min:85, max:102, ticks:{callback:v=>v+'%'} },
+        x: { grid:{display:false} }
+      }
+    }
+  });
+})();
+
+(function(){
+  const ctx = document.getElementById('chartDistribution').getContext('2d');
+  const buckets = VIEWER_DISTRIBUTION.labels;
+  const counts = VIEWER_DISTRIBUTION.counts;
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: buckets,
+      datasets: [{
+        label: 'Matches',
+        data: counts,
+        backgroundColor: 'rgba(245,197,24,0.6)',
+        borderColor: GOLD, borderWidth:1, borderRadius:1,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend:{display:false}, tooltip:{ callbacks:{ label: c=>' '+c.raw+' matches' } } },
+      scales: {
+        y: { grid:{color:'rgba(255,255,255,0.05)'}, title:{display:true,text:'# Matches',color:'#8a8a8a'} },
+        x: { grid:{display:false}, title:{display:true,text:'Viewers (M)',color:'#8a8a8a'} }
+      }
+    }
+  });
+})();
+
+(function(){
+  const ctx = document.getElementById('chartStageCount').getContext('2d');
+  new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Group Stage','Round of 16','Quarter-Finals','Semi-Finals','3rd Place','Final'],
+      datasets: [{
+        data: [
+          STAGE_SUMMARY['group stage'].count,
+          STAGE_SUMMARY['round of 16'].count,
+          STAGE_SUMMARY['quarter-finals'].count,
+          STAGE_SUMMARY['semi-finals'].count,
+          STAGE_SUMMARY['third-place match'].count,
+          STAGE_SUMMARY['final'].count,
+        ],
+        backgroundColor: [BLUE, GREEN, ORANGE, RED, '#666', GOLD],
+        borderColor: '#080f09', borderWidth: 2,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      cutout: '60%',
+      plugins: {
+        legend: { position:'right', labels:{ boxWidth:10, padding:12 } },
+        tooltip: { callbacks:{ label: c=>' '+c.raw+' matches' } }
+      }
+    }
+  });
+})();
+
+(function(){
+  const ctx = document.getElementById('chartDrivers').getContext('2d');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: DRIVER_DATA.labels,
+      datasets: [{
+        data: DRIVER_DATA.values,
+        backgroundColor: [BLUE+'AA', GOLD+'BB', ORANGE+'BB', GREEN+'BB', RED+'BB'],
+        borderColor: [BLUE, GOLD, ORANGE, GREEN, RED],
+        borderWidth: 1,
+        borderRadius: 1,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: c => ` ${c.raw.toFixed(1)}M avg viewers` } }
+      },
+      scales: {
+        y: { grid: { color:'rgba(255,255,255,0.05)' }, ticks: { callback: v => `${v}M` } },
+        x: { grid: { display: false } }
+      }
+    }
+  });
+})();
+
+(function(){
+  const ctx = document.getElementById('chartCities').getContext('2d');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: CITY_DATA.labels,
+      datasets: [{
+        data: CITY_DATA.values,
+        backgroundColor: 'rgba(245,197,24,0.65)',
+        borderColor: GOLD,
+        borderWidth: 1,
+        borderRadius: 1,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: c => ` ${c.raw.toFixed(2)}B viewers` } }
+      },
+      scales: {
+        y: { grid: { color:'rgba(255,255,255,0.05)' }, ticks: { callback: v => `${v}B` } },
+        x: { grid: { display: false }, ticks: { maxRotation: 35 } }
+      }
+    }
+  });
+})();
+
+const ALL_SORTED = [...RAW].sort((a,b) => b.viewers - a.viewers);
+const TOP20 = ALL_SORTED.slice(0,20);
+
+function stageBadge(s) {
+  if(s==='final') return '<span class="badge badge-final">Final</span>';
+  if(s==='semi-finals') return '<span class="badge badge-semi">Semi</span>';
+  if(s==='quarter-finals') return '<span class="badge badge-qf">QF</span>';
+  if(s==='round of 16') return '<span class="badge badge-r16">R16</span>';
+  return '<span class="badge badge-gs">GS</span>';
+}
+
+function renderMatchTable(filter) {
+  const data = filter === 'all' ? TOP20 : ALL_SORTED.filter(m => String(m.year)===filter).slice(0,20);
+  const maxV = data[0]?.viewers || 1;
+  const tbody = document.getElementById('matchTableBody');
+  tbody.innerHTML = data.map((m,i) => {
+    const pct = (m.viewers/maxV*100).toFixed(1);
+    const flags = [
+      m.extra_time ? '<span class="badge badge-et">ET</span>' : '',
+      m.penalties ? '<span class="badge badge-pen">Pen</span>' : '',
+      m.is_host ? '<span class="badge badge-gs">Host</span>' : '',
+    ].filter(Boolean).join(' ');
+    return `<tr>
+      <td class="rank-num ${i===0?'gold':''}">${i+1}</td>
+      <td><strong>${m.home}</strong> <span style="color:var(--muted)">vs</span> <strong>${m.away}</strong><br><span style="font-size:.72rem;color:var(--muted)">${m.stadium}, ${m.city}</span></td>
+      <td style="font-family:'Space Mono',monospace;font-size:.8rem">${m.year}</td>
+      <td>${stageBadge(m.stage)}</td>
+      <td>${flags||'—'}</td>
+      <td>
+        <div class="viewer-bar-wrap">
+          <div class="viewer-bar-bg"><div class="viewer-bar-fill" style="width:${pct}%"></div></div>
+          <span class="viewer-val">${m.viewers.toFixed(0)}M</span>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+renderMatchTable('all');
+
+document.getElementById('matchTabs').addEventListener('click', e => {
+  if(!e.target.classList.contains('tab')) return;
+  document.querySelectorAll('#matchTabs .tab').forEach(t=>t.classList.remove('active'));
+  e.target.classList.add('active');
+  renderMatchTable(e.target.dataset.filter);
+});
+
+(function(){
+  const stageOrder = ['group stage','round of 16','quarter-finals','semi-finals','third-place match','final'];
+  const container = document.getElementById('stageRows');
+  const maxAvg = Math.max(...stageOrder.map(s => STAGE_DATA[s].avg));
+  container.innerHTML = stageOrder.map(s => {
+    const d = STAGE_DATA[s];
+    const pct = maxAvg ? (d.avg/maxAvg*100).toFixed(1) : 0;
+    const label = s.replace('group stage','Group Stage').replace('round of 16','Round of 16')
+      .replace('quarter-finals','Quarters').replace('semi-finals','Semis')
+      .replace('third-place match','3rd Place').replace('final','Final');
+    return `<div class="stage-row">
+      <span class="stage-name">${label}</span>
+      <div class="stage-bar-wrap"><div class="stage-bar-fill" style="width:${pct}%;background:${d.color}"></div></div>
+      <span class="stage-avg">${d.avg.toFixed(0)}M avg</span>
+      <span class="stage-max">${d.max.toFixed(0)}M peak</span>
+    </div>`;
+  }).join('');
+})();
+
+(function(){
+  const ctx = document.getElementById('chartStageBar').getContext('2d');
+  const labels = ['Group Stage','R16','QF','Semis','3rd','Final'];
+  const avgs = [
+    STAGE_SUMMARY['group stage'].avg,
+    STAGE_SUMMARY['round of 16'].avg,
+    STAGE_SUMMARY['quarter-finals'].avg,
+    STAGE_SUMMARY['semi-finals'].avg,
+    STAGE_SUMMARY['third-place match'].avg,
+    STAGE_SUMMARY['final'].avg,
+  ];
+  const colors = [BLUE, GREEN, ORANGE, RED, '#666', GOLD];
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets:[{ data:avgs, backgroundColor:colors.map(c=>c+'CC'), borderColor:colors, borderWidth:1, borderRadius:1 }]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false, indexAxis:'y',
+      plugins:{ legend:{display:false} },
+      scales: {
+        x: { grid:{color:'rgba(255,255,255,0.05)'}, ticks:{callback:v=>v+'M'} },
+        y: { grid:{display:false} }
+      }
+    }
+  });
+})();
+
+(function(){
+  const ctx = document.getElementById('chartDrama').getContext('2d');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Normal (90 min)','Extra Time','Penalty Shootout'],
+      datasets:[{
+        data: [183, 226, 268],
+        backgroundColor: [BLUE+'AA', ORANGE+'AA', RED+'AA'],
+        borderColor: [BLUE, ORANGE, RED],
+        borderWidth:1, borderRadius:1,
+      }]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false} },
+      scales: {
+        y:{ grid:{color:'rgba(255,255,255,0.05)'}, ticks:{callback:v=>v+'M'} },
+        x:{ grid:{display:false} }
+      }
+    }
+  });
+})();
+
+(function(){
+  const ctx = document.getElementById('chartStageEvolution').getContext('2d');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: STAGE_EVOLUTION.labels,
+      datasets:[
+        { label:'Group Stage', data: STAGE_EVOLUTION.group, borderColor:BLUE, backgroundColor:BLUE+'20', tension:.3, pointRadius:4, pointBackgroundColor:BLUE },
+        { label:'Semi-Finals', data: STAGE_EVOLUTION.semi, borderColor:RED, backgroundColor:RED+'20', tension:.3, pointRadius:4, pointBackgroundColor:RED },
+        { label:'Final', data: STAGE_EVOLUTION.final, borderColor:GOLD, backgroundColor:GOLD+'20', tension:.3, pointRadius:4, pointBackgroundColor:GOLD },
+      ]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ labels:{ boxWidth:10, padding:12 } } },
+      scales: {
+        y:{ grid:{color:'rgba(255,255,255,0.05)'}, ticks:{callback:v=>v+'M'} },
+        x:{ grid:{display:false} }
+      }
+    }
+  });
+})();
+
+(function(){
+  const ctx = document.getElementById('chartTeams').getContext('2d');
+  const teams = ['Brazil','Argentina','Germany','Netherlands','Croatia','Spain','Uruguay','France','England','Russia','Colombia','Chile','Portugal','Sweden','Belgium'];
+  const avgs  = [199.5, 184.2, 183.4, 196.3, 192.4, 178.6, 180.0, 178.9, 176.0, 208.8, 178.9, 177.3, 173.0, 179.0, 172.0];
+  const barColors = teams.map(t => {
+    if(['Brazil','Argentina','Germany'].includes(t)) return GOLD+'CC';
+    if(['Netherlands','Croatia','France'].includes(t)) return BLUE+'CC';
+    return ORANGE+'88';
+  });
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: teams,
+      datasets:[{ data:avgs, backgroundColor:barColors, borderColor:GOLD+'44', borderWidth:1, borderRadius:1 }]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false}, tooltip:{callbacks:{label:c=>` ${c.raw}M avg viewers`}} },
+      scales: {
+        y:{ grid:{color:'rgba(255,255,255,0.05)'}, min:160, ticks:{callback:v=>v+'M'} },
+        x:{ grid:{display:false}, ticks:{maxRotation:45} }
+      }
+    }
+  });
+})();
+
+(function(){
+  const ctx = document.getElementById('chartHostEffect').getContext('2d');
+  new Chart(ctx, {
+    type: 'radar',
+    data: {
+      labels: ['2010 SA','2014 Brazil','2018 Russia','2022 Qatar'],
+      datasets:[
+        { label:'Host Team Avg', data:[201, 188, 193, 231], borderColor:GOLD, backgroundColor:GOLD+'22', pointBackgroundColor:GOLD, tension:.2 },
+        { label:'Tournament Avg', data:[177, 174, 177, 152], borderColor:BLUE, backgroundColor:BLUE+'15', pointBackgroundColor:BLUE, tension:.2 },
+      ]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ position:'bottom', labels:{boxWidth:10} } },
+      scales: {
+        r: {
+          grid:{ color:'rgba(255,255,255,0.08)' },
+          ticks:{ backdropColor:'transparent', callback:v=>v+'M', stepSize:40 },
+          pointLabels:{ color:'#aaa', font:{size:10} },
+          min:100
+        }
+      }
+    }
+  });
+})();
+
+(function(){
+  const ctx = document.getElementById('chartFifaTop10').getContext('2d');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: FIFA_TOP10_RANKED.map(t => `${t.rank}. ${t.team}`),
+      datasets: [{
+        data: FIFA_TOP10_RANKED.map(t => t.avg),
+        backgroundColor: FIFA_TOP10_RANKED.map(t => t.rank <= 3 ? GOLD+'CC' : t.rank <= 7 ? BLUE+'AA' : ORANGE+'99'),
+        borderColor: FIFA_TOP10_RANKED.map(t => t.rank <= 3 ? GOLD : t.rank <= 7 ? BLUE : ORANGE),
+        borderWidth: 1,
+        borderRadius: 1,
+      }]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{callbacks:{
+          label: c => ` ${c.raw.toFixed(1)}M avg viewers`,
+          afterLabel: c => {
+            const team = FIFA_TOP10_RANKED[c.dataIndex];
+            return `Peak: ${team.peak.toFixed(1)}M`;
+          }
+        }}
+      },
+      scales:{
+        y:{ grid:{color:'rgba(255,255,255,0.05)'}, ticks:{callback:v=>`${v}M`} },
+        x:{ grid:{display:false}, ticks:{maxRotation:40, minRotation:40} }
+      }
+    }
+  });
+})();
+
+(function(){
+  const tbody = document.getElementById('fifaTop10TableBody');
+  tbody.innerHTML = FIFA_TOP10_RANKED.map(team => `
+    <tr>
+      <td><span class="badge badge-rank">#${team.rank}</span></td>
+      <td><strong>${team.team}</strong></td>
+      <td>${team.matches}</td>
+      <td>${(team.total / 1000).toFixed(2)}B</td>
+      <td>${team.avg.toFixed(1)}M</td>
+      <td>${team.peakMatch}<br><span style="font-size:.72rem;color:var(--muted)">${team.peak.toFixed(1)}M in ${team.peakYear}</span></td>
+    </tr>
+  `).join('');
+})();
+
+(function(){
+  const ctx = document.getElementById('chartForecastTrend').getContext('2d');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['2010','2014','2018','2022','2026 Forecast'],
+      datasets: [{
+        label: 'Total Viewers (Billions)',
+        data: [11.35, 11.13, 11.30, 9.70, FORECAST_2026.total],
+        backgroundColor: [
+          'rgba(245,197,24,0.68)',
+          'rgba(61,159,212,0.68)',
+          'rgba(61,189,110,0.68)',
+          'rgba(245,128,62,0.68)',
+          'rgba(232,64,64,0.68)',
+        ],
+        borderColor: [GOLD, BLUE, GREEN, ORANGE, RED],
+        borderWidth: 1,
+        borderRadius: 1,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: c => ` ${c.raw.toFixed(2)}B viewers` } }
+      },
+      scales: {
+        y: { grid: { color:'rgba(255,255,255,0.05)' }, ticks: { callback: v => `${v}B` } },
+        x: { grid: { display: false } }
+      }
+    }
+  });
+})();
+
+(function(){
+  const ctx = document.getElementById('chartForecastStages').getContext('2d');
+  const labels = Object.keys(FORECAST_2026.stageTotals);
+  const values = Object.values(FORECAST_2026.stageTotals);
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        data: values,
+        backgroundColor: [BLUE+'BB', GREEN+'BB', GREEN+'88', ORANGE+'BB', RED+'BB', '#777777', GOLD+'CC'],
+        borderColor: [BLUE, GREEN, GREEN, ORANGE, RED, '#777777', GOLD],
+        borderWidth: 1,
+        borderRadius: 1,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: c => ` ${c.raw.toFixed(3)}B viewers` } }
+      },
+      scales: {
+        x: { grid: { color:'rgba(255,255,255,0.05)' }, ticks: { callback: v => `${v}B` } },
+        y: { grid: { display: false } }
+      }
+    }
+  });
+})();
+
+(function(){
+  const tbody = document.getElementById('forecastMatchTableBody');
+  tbody.innerHTML = FORECAST_MATCHUPS.map(item => {
+    const result = projectMatchAudience({
+      home: item.home,
+      away: item.away,
+      stage: item.stage,
+      host: item.host,
+      mode: item.mode,
+      windowMode: item.window,
+      availabilityMode: item.availability,
+    });
+    return `
+    <tr>
+      <td><strong>${item.home} vs ${item.away}</strong></td>
+      <td>${result.projected.toFixed(0)}M</td>
+      <td>${item.note} Rank/form/star blend: ${result.qualityLift.toFixed(2)}x quality, ${result.starLift.toFixed(2)}x star pull.</td>
+    </tr>
+  `;
+  }).join('');
+})();
+
+(function(){
+  const ctx = document.getElementById('chartBroadcastInventory').getContext('2d');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: BROADCAST_OUTLOOK.map(b => b.outlet),
+      datasets: [{
+        data: BROADCAST_OUTLOOK.map(b => b.inventory),
+        backgroundColor: [GOLD+'CC', BLUE+'BB', BLUE+'66', ORANGE+'CC', ORANGE+'88', GREEN+'BB', GREEN+'55'],
+        borderColor: [GOLD, BLUE, BLUE, ORANGE, ORANGE, GREEN, GREEN],
+        borderWidth: 1,
+        borderRadius: 1,
+      }]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{callbacks:{label:c=>` ${c.raw} matches / streams`}}
+      },
+      scales:{
+        y:{ grid:{color:'rgba(255,255,255,0.05)'}, ticks:{stepSize:20} },
+        x:{ grid:{display:false} }
+      }
+    }
+  });
+})();
+
+(function(){
+  const tbody = document.getElementById('broadcastExpectTableBody');
+  tbody.innerHTML = BROADCAST_OUTLOOK.map(item => `
+    <tr>
+      <td><strong>${item.outlet}</strong></td>
+      <td>${item.inventory}</td>
+      <td>${item.expectation}</td>
+    </tr>
+  `).join('');
+})();
+
+(function(){
+  const ctx = document.getElementById('chartScenarioForecast').getContext('2d');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: SCENARIO_FORECAST.map(s => s.scenario),
+      datasets: [{
+        data: SCENARIO_FORECAST.map(s => s.total),
+        backgroundColor: [BLUE+'AA', GOLD+'CC', RED+'AA'],
+        borderColor: [BLUE, GOLD, RED],
+        borderWidth: 1,
+        borderRadius: 1,
+      }]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false}, tooltip:{callbacks:{label:c=>` ${c.raw.toFixed(1)}B viewers`}} },
+      scales:{
+        y:{ grid:{color:'rgba(255,255,255,0.05)'}, ticks:{callback:v=>`${v}B`} },
+        x:{ grid:{display:false} }
+      }
+    }
+  });
+})();
+
+(function(){
+  const ctx = document.getElementById('chartHostImpact').getContext('2d');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: HOST_COUNTRY_IMPACT.map(h => h.host),
+      datasets: [
+        {
+          label:'Matches',
+          data: HOST_COUNTRY_IMPACT.map(h => h.matches),
+          backgroundColor: BLUE+'88',
+          borderColor: BLUE,
+          borderWidth: 1,
+          yAxisID: 'y1'
+        },
+        {
+          label:'Audience Share %',
+          data: HOST_COUNTRY_IMPACT.map(h => h.share),
+          backgroundColor: GOLD+'66',
+          borderColor: GOLD,
+          borderWidth: 1,
+          yAxisID: 'y2',
+          type: 'line',
+          tension: .25,
+          pointRadius: 4,
+          pointBackgroundColor: GOLD,
+        }
+      ]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{labels:{boxWidth:10}} },
+      scales:{
+        y1:{ position:'left', grid:{color:'rgba(255,255,255,0.05)'} },
+        y2:{ position:'right', grid:{display:false}, ticks:{callback:v=>`${v}%`} },
+        x:{ grid:{display:false} }
+      }
+    }
+  });
+})();
+
+(function(){
+  const ctx = document.getElementById('chartRivalries').getContext('2d');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: RIVALRY_DATA.map(r => r.matchup),
+      datasets: [{
+        data: RIVALRY_DATA.map(r => r.premium),
+        backgroundColor: ORANGE+'AA',
+        borderColor: ORANGE,
+        borderWidth: 1,
+        borderRadius: 1,
+      }]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false}, tooltip:{callbacks:{label:c=>` ${c.raw.toFixed(2)}x baseline`}} },
+      scales:{
+        y:{ grid:{color:'rgba(255,255,255,0.05)'}, ticks:{callback:v=>`${v}x`} },
+        x:{ grid:{display:false}, ticks:{maxRotation:45, minRotation:25} }
+      }
+    }
+  });
+})();
+
+(function(){
+  const ctx = document.getElementById('chartDramaTeams').getContext('2d');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: DRAMA_TEAM_DATA.map(d => d.team),
+      datasets: [{
+        data: DRAMA_TEAM_DATA.map(d => d.drama),
+        backgroundColor: RED+'AA',
+        borderColor: RED,
+        borderWidth: 1,
+        borderRadius: 1,
+      }]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false}, tooltip:{callbacks:{label:c=>` ${c.raw} ET/Pen matches`}} },
+      scales:{
+        y:{ grid:{color:'rgba(255,255,255,0.05)'}, ticks:{stepSize:1} },
+        x:{ grid:{display:false} }
+      }
+    }
+  });
+})();
+
+const REVEAL_SELECTOR = [
+  '.section-head',
+  '.section-label',
+  '.section-title',
+  '.section-desc',
+  '.section-badge',
+  '.tab-bar',
+  '.panel',
+  '.kpi-card',
+  '.clock-card',
+  '.year-card',
+  '.sim-result',
+  '.mini-panel',
+  '.profile-card',
+  '.signal-card',
+  '.profile-chip',
+  '.timeline-item',
+  '.timeline-spotlight',
+  '.map-panel',
+  '.map-list-item',
+  '.feature-grid',
+  '.split-grid',
+  '.player-spotlight-card'
+].join(',');
+
+let revealObserver = null;
+
+function getRevealMode(element) {
+  if (element.classList.contains('timeline-spotlight')) return 'slide-left';
+  if (element.classList.contains('map-panel') || element.classList.contains('panel')) return 'zoom';
+  if (element.classList.contains('section-badge') || element.classList.contains('clock-card')) return 'slide-right';
+  return 'reveal';
+}
+
+function syncMotionSystem(scope = document) {
+  if (!revealObserver) {
+    revealObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('is-visible');
+        revealObserver.unobserve(entry.target);
+      });
+    }, { threshold: 0.14, rootMargin: '0px 0px -8% 0px' });
+  }
+
+  const nodes = [];
+  if (scope instanceof Element && scope.matches(REVEAL_SELECTOR)) nodes.push(scope);
+  nodes.push(...scope.querySelectorAll(REVEAL_SELECTOR));
+
+  nodes.forEach((node, index) => {
+    if (!node.hasAttribute('data-reveal')) {
+      node.setAttribute('data-reveal', getRevealMode(node));
+    }
+    if (!node.style.getPropertyValue('--reveal-delay')) {
+      node.style.setProperty('--reveal-delay', `${Math.min((index % 6) * 85, 425)}ms`);
+    }
+    if (!node.classList.contains('is-visible')) revealObserver.observe(node);
+  });
+}
+
+syncMotionSystem();
+
+function clamp(value, min, max) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function getTeamSignal(teamName) {
+  const signal = TEAM_SIGNAL_MODEL[teamName] || {};
+  return {
+    team: teamName,
+    fifaRank: signal.fifaRank || 32,
+    popularity: signal.popularity || 72,
+    form: signal.form || 75,
+    starPower: signal.starPower || 70,
+    availability: signal.availability || 0.9,
+    stars: signal.stars || ['Primary star','Secondary star','Key starter'],
+    note: signal.note || 'Modeled audience signal derived from current quality and star outlook.',
+    baseAudience: SIM_TEAM_BASE[teamName] || 160,
+  };
+}
+
+function rankingQualityMultiplier(homeSignal, awaySignal) {
+  const rankEdge = ((40 - clamp(homeSignal.fifaRank, 1, 60)) + (40 - clamp(awaySignal.fifaRank, 1, 60))) / 2;
+  return 0.94 + (rankEdge / 39) * 0.14;
+}
+
+function popularityMultiplier(homeSignal, awaySignal) {
+  const avgPopularity = (homeSignal.popularity + awaySignal.popularity) / 2;
+  return 0.95 + (avgPopularity / 100) * 0.13;
+}
+
+function formSignalMultiplier(homeSignal, awaySignal) {
+  const avgForm = (homeSignal.form + awaySignal.form) / 2;
+  return 0.94 + (avgForm / 100) * 0.12;
+}
+
+function starPowerMultiplier(homeSignal, awaySignal) {
+  const starAvailabilityBlend = ((homeSignal.starPower * homeSignal.availability) + (awaySignal.starPower * awaySignal.availability)) / 2;
+  return 0.94 + (starAvailabilityBlend / 100) * 0.14;
+}
+
+function availabilityScenarioMultiplier(mode, homeSignal, awaySignal) {
+  if (mode === 'full') return 1.03;
+  if (mode === 'mixed') return 0.97;
+  if (mode === 'limited') return 0.91;
+  return 0.91 + (((homeSignal.availability + awaySignal.availability) / 2) * 0.12);
+}
+
+function formatLift(multiplier) {
+  return `${multiplier.toFixed(2)}x`;
+}
+
+function availabilityLabel(signal) {
+  if (signal.availability >= 0.91) return 'High';
+  if (signal.availability >= 0.87) return 'Watch';
+  return 'Fragile';
+}
+
+function renderSignalCard(teamName, targetId) {
+  const signal = getTeamSignal(teamName);
+  const target = document.getElementById(targetId);
+  if (!target) return;
+
+  target.innerHTML = `
+    <div class="mini-label">Team Signal</div>
+    <div class="signal-topline">
+      <h4>${signal.team}</h4>
+      <div class="signal-rank">FIFA #${signal.fifaRank}</div>
+    </div>
+    <div class="signal-stars"><strong>Expected stars:</strong> ${signal.stars.join(', ')}</div>
+    <div class="signal-metrics">
+      <div class="signal-pill">
+        <strong>${signal.popularity}</strong>
+        <span>Popularity</span>
+      </div>
+      <div class="signal-pill">
+        <strong>${signal.form}</strong>
+        <span>Recent form</span>
+      </div>
+      <div class="signal-pill">
+        <strong>${signal.starPower}</strong>
+        <span>Star power</span>
+      </div>
+      <div class="signal-pill">
+        <strong>${availabilityLabel(signal)}</strong>
+        <span>Availability</span>
+      </div>
+    </div>
+  `;
+}
+
+const playerImageCache = {};
+const SPORTSDB_SEARCH_URL = 'https://www.thesportsdb.com/api/v1/json/123/searchplayers.php?p=';
+const SPORTSDB_PLAYER_ALIASES = {
+  'Vinicius Junior': 'Vinícius Júnior',
+  'Moises Caicedo': 'Moisés Caicedo',
+  'Kylian Mbappe': 'Kylian Mbappé',
+  'Luis Diaz': 'Luis Díaz',
+  'Luka Modric': 'Luka Modrić',
+  'Santiago Gimenez': 'Santiago Giménez',
+  'Sadio Mane': 'Sadio Mané'
+};
+
+function initialsForPlayer(name) {
+  return String(name || 'Player')
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map(part => part[0])
+    .join('')
+    .toUpperCase();
+}
+
+function normalizeName(value) {
+  return String(value || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-zA-Z0-9]+/g, '')
+    .toLowerCase();
+}
+
+function pickSportsDbPlayer(players, spotlight) {
+  if (!Array.isArray(players) || !players.length) return null;
+  const wanted = normalizeName(spotlight?.player);
+  const alias = normalizeName(SPORTSDB_PLAYER_ALIASES[spotlight?.player] || '');
+  return players.find(player => {
+    const current = normalizeName(player?.strPlayer);
+    return current === wanted || (alias && current === alias);
+  }) || players[0];
+}
+
+async function resolvePlayerImage(spotlight) {
+  const cacheKey = spotlight?.player || spotlight?.wikipedia_title;
+  if (!cacheKey) return null;
+  if (playerImageCache[cacheKey]) return playerImageCache[cacheKey];
+
+  if (spotlight?.image_url || spotlight?.backdrop_url) {
+    const manual = Promise.resolve({
+      figure: spotlight.image_url || spotlight.backdrop_url,
+      backdrop: spotlight.backdrop_url || spotlight.image_url || spotlight.backdrop_url,
+      source: 'Wikimedia Commons'
+    });
+    playerImageCache[cacheKey] = manual;
+    return manual;
+  }
+
+  const sportsDbName = SPORTSDB_PLAYER_ALIASES[spotlight.player] || spotlight.player;
+  const request = fetch(`${SPORTSDB_SEARCH_URL}${encodeURIComponent(sportsDbName)}`)
+    .then(response => response.ok ? response.json() : null)
+    .then(data => {
+      const player = pickSportsDbPlayer(data?.player, spotlight);
+      if (!player) return null;
+      const figure = player?.strCutout || player?.strRender || player?.strThumb || null;
+      const backdrop = player?.strFanart1 || player?.strFanart2 || player?.strThumb || figure || null;
+      if (!figure && !backdrop) return null;
+      return { figure: figure || backdrop, backdrop: backdrop || figure, source: 'TheSportsDB' };
+    })
+    .catch(() => null)
+    .then(result => {
+      if (result) return result;
+      if (!spotlight?.wikipedia_title) return null;
+      return fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(spotlight.wikipedia_title)}`)
+        .then(response => response.ok ? response.json() : null)
+        .then(data => {
+          if (!data) return null;
+          const original = data?.originalimage?.source || null;
+          const thumbnail = data?.thumbnail?.source || null;
+          const image = original || thumbnail;
+          return image ? { figure: image, backdrop: image, source: 'Wikipedia' } : null;
+        })
+        .catch(() => null);
+    });
+
+  playerImageCache[cacheKey] = request;
+  return request;
+}
+
+function spotlightFallbackMarkup(playerName) {
+  return `<div class="player-photo-fallback">${initialsForPlayer(playerName)}</div>`;
+}
+
+function applySpotlightFallback(imageRoot, playerName) {
+  if (!imageRoot) return;
+  imageRoot.innerHTML = spotlightFallbackMarkup(playerName);
+}
+
+function mountSpotlightImages(imageRoot, playerName, imageSet) {
+  if (!imageRoot || (!imageSet?.figure && !imageSet?.backdrop)) {
+    applySpotlightFallback(imageRoot, playerName);
+    return;
+  }
+
+  const backdrop = imageSet.backdrop || imageSet.figure;
+  const figure = imageSet.figure || imageSet.backdrop;
+
+  imageRoot.innerHTML = `
+    <img class="player-photo player-photo-backdrop" src="${backdrop}" alt="" aria-hidden="true" referrerpolicy="no-referrer">
+    <img class="player-photo player-photo-figure" src="${figure}" alt="" aria-hidden="true" referrerpolicy="no-referrer">
+  `;
+
+  const images = [...imageRoot.querySelectorAll('img')];
+  let failed = false;
+  images.forEach(img => {
+    img.addEventListener('error', () => {
+      if (failed) return;
+      failed = true;
+      applySpotlightFallback(imageRoot, playerName);
+    }, { once: true });
+  });
+}
+
+function renderPlayerSpotlight(teamName, targetId) {
+  const signal = getTeamSignal(teamName);
+  const spotlight = PLAYER_SPOTLIGHT_DB[teamName];
+  const target = document.getElementById(targetId);
+  if (!target) return;
+
+  if (!spotlight) {
+    target.innerHTML = `
+      <div class="mini-label">Player To Watch</div>
+      <div class="player-spotlight-hero">
+        <div class="player-spotlight-media">${spotlightFallbackMarkup(signal.stars[0])}</div>
+        <div class="player-spotlight-body">
+          <div class="player-spotlight-copy-block">
+            <div class="player-spotlight-meta">
+              <div class="player-spotlight-team">${teamName}</div>
+              <h4>${signal.stars[0]}</h4>
+              <div class="player-spotlight-role">Modeled spotlight fallback</div>
+            </div>
+            <div class="player-spotlight-copy">${signal.note}</div>
+          </div>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  target.innerHTML = `
+    <div class="mini-label">Player To Watch</div>
+    <div class="player-spotlight-hero">
+      <div class="player-spotlight-media" id="${targetId}Image">${spotlightFallbackMarkup(spotlight.player)}</div>
+      <div class="player-spotlight-body">
+        <div class="player-spotlight-copy-block">
+          <div class="player-spotlight-meta">
+            <div class="player-spotlight-team">${spotlight.flag} ${teamName}</div>
+            <h4>${spotlight.player}</h4>
+            <div class="player-spotlight-role">${spotlight.role} • ${spotlight.club}</div>
+          </div>
+          <div class="player-spotlight-copy">${spotlight.headline}</div>
+          <div class="player-spotlight-copy">${spotlight.recent_form}</div>
+          <div class="player-watch-list">
+            ${spotlight.details.map(detail => `<div class="player-watch-item">${detail}</div>`).join('')}
+          </div>
+        </div>
+        <div class="player-spotlight-stack">
+          <div class="player-detail">
+            <strong>Status</strong>
+            <span>${spotlight.status}</span>
+          </div>
+          <div class="player-detail">
+            <strong>Recent Form</strong>
+            <span>${spotlight.form_score}/100</span>
+          </div>
+          <div class="player-detail">
+            <strong>Watch Score</strong>
+            <span>${spotlight.watch_score}/100 • Availability ${spotlight.availability}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  resolvePlayerImage(spotlight).then(imageSet => {
+    const imageRoot = document.getElementById(`${targetId}Image`);
+    if (!imageRoot) return;
+    mountSpotlightImages(imageRoot, spotlight.player, imageSet);
+  });
+}
+
+function projectMatchAudience({
+  home,
+  away,
+  stage = 'group',
+  host = 'USA',
+  mode = 'normal',
+  windowMode = 'standard',
+  availabilityMode = 'auto',
+}) {
+  const homeSignal = getTeamSignal(home);
+  const awaySignal = getTeamSignal(away);
+  const baseAudience = (homeSignal.baseAudience + awaySignal.baseAudience) / 2;
+  const qualityLift = rankingQualityMultiplier(homeSignal, awaySignal);
+  const popularityLift = popularityMultiplier(homeSignal, awaySignal);
+  const formLift = formSignalMultiplier(homeSignal, awaySignal);
+  const starLift = starPowerMultiplier(homeSignal, awaySignal);
+  const availabilityLift = availabilityScenarioMultiplier(availabilityMode, homeSignal, awaySignal);
+  const projected = baseAudience
+    * stageMultiplier(stage)
+    * hostMultiplier(host, home, away)
+    * dramaMultiplier(mode)
+    * windowMultiplier(windowMode)
+    * qualityLift
+    * popularityLift
+    * formLift
+    * starLift
+    * availabilityLift;
+
+  const englishBase = home === 'United States' || away === 'United States' ? 0.18 : 0.11;
+  const spanishBase = (home === 'Mexico' || away === 'Mexico' || home === 'Argentina' || away === 'Argentina' || home === 'Brazil' || away === 'Brazil' || home === 'Colombia' || away === 'Colombia' || home === 'Uruguay' || away === 'Uruguay') ? 0.2 : 0.12;
+  const english = projected * englishBase * (0.96 + (((homeSignal.popularity + awaySignal.popularity) / 2) / 250));
+  const spanish = projected * spanishBase * (0.95 + (((homeSignal.starPower + awaySignal.starPower) / 2) / 260));
+
+  return {
+    projected,
+    english,
+    spanish,
+    tier: inventoryTier(projected),
+    homeSignal,
+    awaySignal,
+    qualityLift,
+    popularityLift,
+    formLift,
+    starLift,
+    availabilityLift,
+  };
+}
+
+let activeProfile = TEAM_PROFILE_DATA[0].team;
+
+function renderTeamProfile(teamName) {
+  const team = TEAM_PROFILE_DATA.find(t => t.team === teamName) || TEAM_PROFILE_DATA[0];
+  const signal = getTeamSignal(team.team);
+  activeProfile = team.team;
+  const chips = document.getElementById('profileChips');
+  const card = document.getElementById('teamProfileCard');
+  chips.innerHTML = TEAM_PROFILE_DATA.map(t => `<button class="profile-chip ${t.team===team.team?'active':''}" data-team="${t.team}">${t.team}</button>`).join('');
+  card.innerHTML = `
+    <div class="profile-top">
+      <div>
+        <div class="mini-label">Audience Profile</div>
+        <div class="profile-name">${team.team}</div>
+        <div class="profile-meta">${team.tier} • FIFA #${signal.fifaRank} • Peak fixture: ${team.peakMatch}</div>
+      </div>
+      <div class="section-badge">
+        <div class="section-badge-label">2026 Outlook</div>
+        <div class="section-badge-value">${team.tier.includes('Tier A') ? 'High' : 'Watch'}</div>
+      </div>
+    </div>
+    <div class="profile-grid">
+      <div class="mini-panel"><div class="mini-label">Matches</div><div class="mini-value">${team.matches}</div><div class="mini-copy">World Cup appearances in dataset</div></div>
+      <div class="mini-panel"><div class="mini-label">Total Viewers</div><div class="mini-value">${team.total.toFixed(2)}B</div><div class="mini-copy">Cumulative modeled viewers</div></div>
+      <div class="mini-panel"><div class="mini-label">Avg Viewers</div><div class="mini-value">${team.avg.toFixed(1)}M</div><div class="mini-copy">Per match across 2010-2022</div></div>
+      <div class="mini-panel"><div class="mini-label">Peak Match</div><div class="mini-value">${team.peak.toFixed(0)}M</div><div class="mini-copy">${team.peakMatch}</div></div>
+    </div>
+    <p class="forecast-note" style="margin-top:1rem;"><strong>2026 note:</strong> ${team.forecast} Current signal layer: popularity ${signal.popularity}/100, recent form ${signal.form}/100, star pull led by ${signal.stars[0]}, availability ${availabilityLabel(signal)}.</p>
+  `;
+  syncMotionSystem(chips);
+  syncMotionSystem(card);
+}
+
+renderTeamProfile(activeProfile);
+document.getElementById('profileChips').addEventListener('click', e => {
+  const btn = e.target.closest('[data-team]');
+  if(!btn) return;
+  renderTeamProfile(btn.dataset.team);
+});
+
+function renderTimelineSpotlight(item) {
+  const spotlight = document.getElementById('timelineSpotlight');
+  if(!spotlight) return;
+  spotlight.innerHTML = `
+    <div class="timeline-spotlight-year">${item.year}</div>
+    <div class="timeline-spotlight-title">${item.title}</div>
+    <div class="timeline-spotlight-copy">${item.copy}</div>
+    <div class="timeline-spotlight-match">${item.stage} • ${item.match}</div>
+    <div class="timeline-spotlight-stats">
+      <div class="timeline-spotlight-stat">
+        <strong>${item.stat}</strong>
+        <span>Peak Signal</span>
+      </div>
+      <div class="timeline-spotlight-stat">
+        <strong>${item.substat}</strong>
+        <span>Context</span>
+      </div>
+    </div>
+  `;
+  spotlight.classList.remove('is-refreshing');
+  void spotlight.offsetWidth;
+  spotlight.classList.add('is-refreshing');
+  syncMotionSystem(spotlight);
+}
+
+(function(){
+  const list = document.getElementById('timelineList');
+  list.innerHTML = TIMELINE_DATA.map((item, index) => `
+    <div class="timeline-item ${index===0?'active':''}" data-year="${item.year}">
+      <div class="timeline-year">${item.year}</div>
+      <div class="timeline-copy">
+        <strong>${item.title}</strong>
+        <span>${item.copy}</span>
+      </div>
+      <div class="timeline-stat">${item.stat}</div>
+    </div>
+  `).join('');
+  renderTimelineSpotlight(TIMELINE_DATA[0]);
+  syncMotionSystem(list);
+
+  const cards = [...list.querySelectorAll('.timeline-item')];
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if(!entry.isIntersecting) return;
+      const year = entry.target.dataset.year;
+      const active = TIMELINE_DATA.find(item => item.year === year);
+      cards.forEach(card => card.classList.toggle('active', card === entry.target));
+      if(active) renderTimelineSpotlight(active);
+    });
+  }, { threshold: .55, rootMargin: '-10% 0px -25% 0px' });
+  cards.forEach(card => io.observe(card));
+
+  list.addEventListener('click', e => {
+    const card = e.target.closest('.timeline-item');
+    if(!card) return;
+    const active = TIMELINE_DATA.find(item => item.year === card.dataset.year);
+    cards.forEach(node => node.classList.toggle('active', node === card));
+    if(active) renderTimelineSpotlight(active);
+  });
+})();
+
+let activeMapLayer = 'historical';
+
+function renderMapLayer(layerName) {
+  const layer = MAP_LAYERS[layerName];
+  const pointRoot = document.getElementById('mapPoints');
+  const list = document.getElementById('mapList');
+  const title = document.getElementById('mapSideTitle');
+  const filters = document.querySelectorAll('#mapFilters .map-btn');
+  if(!layer || !pointRoot || !list || !title) return;
+
+  activeMapLayer = layerName;
+  filters.forEach(btn => btn.classList.toggle('active', btn.dataset.map === layerName));
+  title.textContent = layer.title;
+
+  pointRoot.innerHTML = layer.points.map((point, index) => `
+    <g transform="translate(${point.x}, ${point.y})" style="opacity:0; animation:mapReveal .55s ease forwards; animation-delay:${index * 90}ms;">
+      <circle r="${point.size}" fill="${point.color}" opacity="0.12"></circle>
+      <circle r="${Math.max(4, Math.round(point.size * 0.42))}" fill="${point.color}" stroke="white" stroke-width="1.5"></circle>
+      <text x="${point.size + 10}" y="5" fill="#f5f1e8" font-family="Space Mono, monospace" font-size="12">${point.name}</text>
+    </g>
+  `).join('');
+
+  list.innerHTML = layer.points.map(point => `
+    <div class="map-list-item">
+      <div>
+        <strong>${point.name}</strong>
+        <span>${point.note}</span>
+      </div>
+      <div class="map-list-val">${point.value}</div>
+    </div>
+  `).join('');
+  syncMotionSystem(list);
+}
+
+renderMapLayer(activeMapLayer);
+document.getElementById('mapFilters').addEventListener('click', e => {
+  const btn = e.target.closest('[data-map]');
+  if(!btn) return;
+  renderMapLayer(btn.dataset.map);
+});
+
+(function(){
+  const home = document.getElementById('simHome');
+  const away = document.getElementById('simAway');
+  const options = SIM_TEAM_POOL.map(t => `<option value="${t}">${t}</option>`).join('');
+  home.innerHTML = options;
+  away.innerHTML = options;
+  home.value = 'United States';
+  away.value = 'Paraguay';
+})();
+
+function stageMultiplier(stage) {
+  return { group:1.0, r32:1.12, r16:1.22, qf:1.38, sf:1.62, final:1.95 }[stage] || 1;
+}
+function hostMultiplier(host, home, away) {
+  if(host === 'USA' && (home === 'United States' || away === 'United States')) return 1.26;
+  if(host === 'Mexico' && (home === 'Mexico' || away === 'Mexico')) return 1.21;
+  if(host === 'Canada' && (home === 'Canada' || away === 'Canada')) return 1.16;
+  if(host === 'USA') return 1.04;
+  if(host === 'Mexico') return 1.02;
+  return 1.01;
+}
+function dramaMultiplier(mode) {
+  return { normal:1.0, extra:1.09, penalties:1.18 }[mode] || 1;
+}
+function windowMultiplier(windowMode) {
+  return { prime:1.08, standard:1.0, offpeak:0.93 }[windowMode] || 1;
+}
+function inventoryTier(v) {
+  if(v >= 240) return 'Tier 1';
+  if(v >= 200) return 'Tier 2';
+  if(v >= 170) return 'Tier 3';
+  return 'Tier 4';
+}
+function simulateMatch() {
+  const home = document.getElementById('simHome').value;
+  const away = document.getElementById('simAway').value;
+  const stage = document.getElementById('simStage').value;
+  const host = document.getElementById('simHost').value;
+  const mode = document.getElementById('simPenalty').value;
+  const windowMode = document.getElementById('simWindow').value;
+  const availabilityMode = document.getElementById('simAvailability').value;
+  const result = projectMatchAudience({ home, away, stage, host, mode, windowMode, availabilityMode });
+  document.getElementById('simProjected').textContent = `${result.projected.toFixed(0)}M`;
+  document.getElementById('simEnglish').textContent = `${result.english.toFixed(0)}M`;
+  document.getElementById('simSpanish').textContent = `${result.spanish.toFixed(0)}M`;
+  document.getElementById('simTier').textContent = result.tier;
+  document.getElementById('simNarrative').textContent = `${home} vs ${away} projects as a ${result.tier} broadcast. The ${stage.toUpperCase()} stage, ${host} host effect, ${mode === 'normal' ? 'regulation finish' : mode} outcome and the current team-signal layer all shape the final audience estimate.`;
+  document.getElementById('simSignalHeadline').textContent = `${result.homeSignal.stars[0]} vs ${result.awaySignal.stars[0]}`;
+  document.getElementById('simSignalNarrative').textContent = `${result.homeSignal.team} carries FIFA #${result.homeSignal.fifaRank} with form ${result.homeSignal.form}/100, while ${result.awaySignal.team} brings FIFA #${result.awaySignal.fifaRank}. Popularity, recent form and likely star availability are layered on top of historical viewership.`;
+  document.getElementById('simQualityLift').textContent = formatLift(result.qualityLift);
+  document.getElementById('simStarLift').textContent = formatLift(result.starLift);
+  document.getElementById('simFormLift').textContent = formatLift(result.formLift);
+  document.getElementById('simAvailLift').textContent = formatLift(result.availabilityLift);
+  renderSignalCard(home, 'simHomeSignal');
+  renderSignalCard(away, 'simAwaySignal');
+  renderPlayerSpotlight(home, 'simHomeSpotlight');
+  renderPlayerSpotlight(away, 'simAwaySpotlight');
+  syncMotionSystem(document.getElementById('simulator'));
+}
+
+simulateMatch();
+document.getElementById('simulateBtn').addEventListener('click', simulateMatch);
+document.querySelectorAll('#simulator select').forEach(control => control.addEventListener('change', simulateMatch));
+
+let tournamentChart = null;
+
+function countdownParts(targetIso) {
+  const target = new Date(targetIso).getTime();
+  const diff = target - Date.now();
+  if(diff <= 0) return null;
+  return {
+    days: Math.floor(diff / (1000 * 60 * 60 * 24)),
+    hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
+    minutes: Math.floor((diff / (1000 * 60)) % 60),
+    seconds: Math.floor((diff / 1000) % 60),
+  };
+}
+
+function formatCompactCountdown(targetIso) {
+  const parts = countdownParts(targetIso);
+  if(!parts) return 'Live';
+  return `${parts.days}D ${String(parts.hours).padStart(2,'0')}H ${String(parts.minutes).padStart(2,'0')}M`;
+}
+
+function updateOpeningCountdown() {
+  const root = document.getElementById('openingCountdown');
+  const meta = document.getElementById('openingCountdownMeta');
+  if(!root || !meta) return;
+  const parts = countdownParts(OPENING_MATCH_KICKOFF);
+
+  if(!parts) {
+    root.querySelector('[data-unit="days"]').textContent = '00';
+    root.querySelector('[data-unit="hours"]').textContent = '00';
+    root.querySelector('[data-unit="minutes"]').textContent = '00';
+    root.querySelector('[data-unit="seconds"]').textContent = '00';
+    meta.textContent = 'Opening match is live or has already kicked off: Mexico vs South Africa • Mexico City Stadium';
+    return;
+  }
+
+  root.querySelector('[data-unit="days"]').textContent = String(parts.days).padStart(2, '0');
+  root.querySelector('[data-unit="hours"]').textContent = String(parts.hours).padStart(2, '0');
+  root.querySelector('[data-unit="minutes"]').textContent = String(parts.minutes).padStart(2, '0');
+  root.querySelector('[data-unit="seconds"]').textContent = String(parts.seconds).padStart(2, '0');
+  meta.textContent = 'Mexico vs South Africa • Thursday, June 11, 2026 • 13:00 Mexico City local time';
+}
+
+function updateTournamentClocks() {
+  const opening = document.getElementById('clockOpeningBig');
+  const usa = document.getElementById('clockUsaBig');
+  const final = document.getElementById('clockFinalBig');
+  if(opening) opening.textContent = formatCompactCountdown(OPENING_MATCH_KICKOFF);
+  if(usa) usa.textContent = formatCompactCountdown(USA_FIRST_MATCH_KICKOFF);
+  if(final) final.textContent = formatCompactCountdown(FINAL_MATCHDAY);
+}
+
+updateOpeningCountdown();
+updateTournamentClocks();
+setInterval(() => {
+  updateOpeningCountdown();
+  updateTournamentClocks();
+}, 1000);
+
+function buildTournamentLine(year) {
+  const matches = getYearMatches(year).slice(0,64);
+  const labels = matches.map((m,i) => `M${i+1}`);
+  const data = matches.map(m => Math.round(m.viewers));
+  const stageColors = matches.map(m => {
+    if(m.stage==='final') return GOLD;
+    if(m.stage==='semi-finals') return RED;
+    if(m.stage==='quarter-finals') return ORANGE;
+    if(m.stage==='round of 16') return GREEN;
+    return BLUE;
+  });
+
+  document.getElementById('tournamentChartTitle').textContent = `${year} — Match-by-Match Global Viewership (Millions)`;
+
+  const ctx = document.getElementById('chartTournamentLine').getContext('2d');
+  if(tournamentChart) tournamentChart.destroy();
+  tournamentChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets:[{
+        data,
+        backgroundColor: stageColors.map(c=>c+'99'),
+        borderColor: stageColors,
+        borderWidth:1, borderRadius:0,
+      }]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{callbacks:{
+          title: (items) => {
+            const m = matches[items[0].dataIndex];
+            return m ? `${m.home} vs ${m.away}` : '';
+          },
+          label: (item) => {
+            const m = matches[item.dataIndex];
+            return m ? ` ${item.raw}M viewers — ${m.stage}` : `${item.raw}M`;
+          }
+        }}
+      },
+      scales: {
+        y:{ grid:{color:'rgba(255,255,255,0.05)'}, ticks:{callback:v=>v+'M'} },
+        x:{ grid:{display:false}, ticks:{maxTicksLimit:20} }
+      }
+    }
+  });
+}
+
+buildTournamentLine(2010);
+
+document.getElementById('yearCards').addEventListener('click', e => {
+  const card = e.target.closest('[data-year]');
+  if(!card) return;
+  document.querySelectorAll('.year-card').forEach(c=>c.classList.remove('active'));
+  card.classList.add('active');
+  buildTournamentLine(parseInt(card.dataset.year));
+});
+
+}
+
+loadWorldCupData();
+</script>
+</body>
+</html>

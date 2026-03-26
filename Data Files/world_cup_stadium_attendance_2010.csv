@@ -1,0 +1,65 @@
+world_cup_year,match_id,stage,match_date,home_team,away_team,stadium,city,attendance,stadium_capacity,occupancy_rate
+2010,2010_01,Group A,2010-06-11,South Africa,Mexico,Soccer City Stadium,Johannesburg ,84490.0,84490,1.0
+2010,2010_02,Group A,2010-06-11,Uruguay,France,Cape Town Stadium,Cape Town ,64100.0,64100,1.0
+2010,2010_03,Group B,2010-06-12,Korea Republic,Greece,Port Elizabeth Stadium,Nelson Mandela Bay/Port Elizabeth ,31513.0,42486,0.7417
+2010,2010_04,Group B,2010-06-12,Argentina,Nigeria,Ellis Park Stadium,Johannesburg ,55686.0,55686,1.0
+2010,2010_05,Group C,2010-06-12,England,USA,Royal Bafokeng Sports Palace,Phokeng ,38646.0,42000,0.9201
+2010,2010_06,Group C,2010-06-13,Algeria,Slovenia,Peter Mokaba Stadium,Polokwane ,30325.0,41733,0.7266
+2010,2010_07,Group D,2010-06-13,Serbia,Ghana,Loftus Versfeld Stadium,Tshwane/Pretoria ,38833.0,42858,0.9061
+2010,2010_08,Group D,2010-06-13,Germany,Australia,Durban Stadium,Durban ,62660.0,62760,0.9984
+2010,2010_09,Group E,2010-06-14,Netherlands,Denmark,Soccer City Stadium,Johannesburg ,83465.0,84490,0.9879
+2010,2010_10,Group E,2010-06-14,Japan,Cameroon,Free State Stadium,Mangaung/Bloemfontein ,30620.0,40911,0.7485
+2010,2010_11,Group F,2010-06-14,Italy,Paraguay,Cape Town Stadium,Cape Town ,62869.0,64100,0.9808
+2010,2010_12,Group F,2010-06-15,New Zealand,Slovakia,Royal Bafokeng Sports Palace,Phokeng ,23871.0,42000,0.5684
+2010,2010_13,Group G,2010-06-15,Cï¿½te d'Ivoire,Portugal,Port Elizabeth Stadium,Nelson Mandela Bay/Port Elizabeth ,37034.0,42486,0.8717
+2010,2010_14,Group G,2010-06-15,Brazil,Korea DPR,Ellis Park Stadium,Johannesburg ,54331.0,55686,0.9757
+2010,2010_15,Group H,2010-06-16,Honduras,Chile,Mbombela Stadium,Nelspruit ,32664.0,40929,0.7981
+2010,2010_16,Group H,2010-06-16,Spain,Switzerland,Durban Stadium,Durban ,62453.0,62760,0.9951
+2010,2010_17,Group A,2010-06-16,South Africa,Uruguay,Loftus Versfeld Stadium,Tshwane/Pretoria ,42658.0,42858,0.9953
+2010,2010_18,Group B,2010-06-17,Argentina,Korea Republic,Soccer City Stadium,Johannesburg ,82174.0,84490,0.9726
+2010,2010_19,Group B,2010-06-17,Greece,Nigeria,Free State Stadium,Mangaung/Bloemfontein ,31593.0,40911,0.7722
+2010,2010_20,Group A,2010-06-17,France,Mexico,Peter Mokaba Stadium,Polokwane ,35370.0,41733,0.8475
+2010,2010_21,Group D,2010-06-18,Germany,Serbia,Port Elizabeth Stadium,Nelson Mandela Bay/Port Elizabeth ,38294.0,42486,0.9013
+2010,2010_22,Group C,2010-06-18,Slovenia,USA,Ellis Park Stadium,Johannesburg ,45573.0,55686,0.8184
+2010,2010_23,Group C,2010-06-18,England,Algeria,Cape Town Stadium,Cape Town ,64100.0,64100,1.0
+2010,2010_24,Group E,2010-06-19,Netherlands,Japan,Durban Stadium,Durban ,62010.0,62760,0.988
+2010,2010_25,Group D,2010-06-19,Ghana,Australia,Royal Bafokeng Sports Palace,Phokeng ,34812.0,42000,0.8289
+2010,2010_26,Group E,2010-06-19,Cameroon,Denmark,Loftus Versfeld Stadium,Tshwane/Pretoria ,38074.0,42858,0.8884
+2010,2010_27,Group F,2010-06-20,Slovakia,Paraguay,Free State Stadium,Mangaung/Bloemfontein ,26643.0,40911,0.6512
+2010,2010_28,Group F,2010-06-20,Italy,New Zealand,Mbombela Stadium,Nelspruit ,38229.0,40929,0.934
+2010,2010_29,Group G,2010-06-20,Brazil,Cï¿½te d'Ivoire,Soccer City Stadium,Johannesburg ,84455.0,84490,0.9996
+2010,2010_30,Group G,2010-06-21,Portugal,Korea DPR,Cape Town Stadium,Cape Town ,63644.0,64100,0.9929
+2010,2010_31,Group H,2010-06-21,Chile,Switzerland,Port Elizabeth Stadium,Nelson Mandela Bay/Port Elizabeth ,34872.0,42486,0.8208
+2010,2010_32,Group H,2010-06-21,Spain,Honduras,Ellis Park Stadium,Johannesburg ,54386.0,55686,0.9767
+2010,2010_33,Group A,2010-06-22,Mexico,Uruguay,Royal Bafokeng Sports Palace,Phokeng ,33425.0,42000,0.7958
+2010,2010_34,Group A,2010-06-22,France,South Africa,Free State Stadium,Mangaung/Bloemfontein ,39415.0,40911,0.9634
+2010,2010_35,Group B,2010-06-22,Nigeria,Korea Republic,Durban Stadium,Durban ,61874.0,62760,0.9859
+2010,2010_36,Group B,2010-06-22,Greece,Argentina,Peter Mokaba Stadium,Polokwane ,38891.0,41733,0.9319
+2010,2010_37,Group C,2010-06-23,Slovenia,England,Port Elizabeth Stadium,Nelson Mandela Bay/Port Elizabeth ,36893.0,42486,0.8684
+2010,2010_38,Group C,2010-06-23,USA,Algeria,Loftus Versfeld Stadium,Tshwane/Pretoria ,35827.0,42858,0.8359
+2010,2010_39,Group D,2010-06-23,Ghana,Germany,Soccer City Stadium,Johannesburg ,83391.0,84490,0.987
+2010,2010_40,Group D,2010-06-23,Australia,Serbia,Mbombela Stadium,Nelspruit ,37836.0,40929,0.9244
+2010,2010_41,Group F,2010-06-24,Slovakia,Italy,Ellis Park Stadium,Johannesburg ,53412.0,55686,0.9592
+2010,2010_42,Group F,2010-06-24,Paraguay,New Zealand,Peter Mokaba Stadium,Polokwane ,34850.0,41733,0.8351
+2010,2010_43,Group E,2010-06-24,Denmark,Japan,Royal Bafokeng Sports Palace,Phokeng ,27967.0,42000,0.6659
+2010,2010_44,Group E,2010-06-24,Cameroon,Netherlands,Cape Town Stadium,Cape Town ,63093.0,64100,0.9843
+2010,2010_45,Group G,2010-06-25,Portugal,Brazil,Durban Stadium,Durban ,62712.0,62760,0.9992
+2010,2010_46,Group G,2010-06-25,Korea DPR,Cï¿½te d'Ivoire,Mbombela Stadium,Nelspruit ,34763.0,40929,0.8493
+2010,2010_47,Group H,2010-06-25,Chile,Spain,Loftus Versfeld Stadium,Tshwane/Pretoria ,41958.0,42858,0.979
+2010,2010_48,Group H,2010-06-25,Switzerland,Honduras,Free State Stadium,Mangaung/Bloemfontein ,28042.0,40911,0.6854
+2010,2010_49,Round of 16,2010-06-26,Uruguay,Korea Republic,Port Elizabeth Stadium,Nelson Mandela Bay/Port Elizabeth ,30597.0,42486,0.7202
+2010,2010_50,Round of 16,2010-06-26,USA,Ghana,Royal Bafokeng Sports Palace,Phokeng ,34976.0,42000,0.8328
+2010,2010_51,Round of 16,2010-06-27,Germany,England,Free State Stadium,Mangaung/Bloemfontein ,40510.0,40911,0.9902
+2010,2010_52,Round of 16,2010-06-27,Argentina,Mexico,Soccer City Stadium,Johannesburg ,84377.0,84490,0.9987
+2010,2010_53,Round of 16,2010-06-28,Netherlands,Slovakia,Durban Stadium,Durban ,61962.0,62760,0.9873
+2010,2010_54,Round of 16,2010-06-28,Brazil,Chile,Ellis Park Stadium,Johannesburg ,54096.0,55686,0.9714
+2010,2010_55,Round of 16,2010-06-29,Paraguay,Japan,Loftus Versfeld Stadium,Tshwane/Pretoria ,36742.0,42858,0.8573
+2010,2010_56,Round of 16,2010-06-29,Spain,Portugal,Cape Town Stadium,Cape Town ,62955.0,64100,0.9821
+2010,2010_57,Quarter-final,2010-07-02,Netherlands,Brazil,Port Elizabeth Stadium,Nelson Mandela Bay/Port Elizabeth ,40186.0,42486,0.9459
+2010,2010_58,Quarter-final,2010-07-02,Uruguay,Ghana,Soccer City Stadium,Johannesburg ,84017.0,84490,0.9944
+2010,2010_59,Quarter-final,2010-07-03,Argentina,Germany,Cape Town Stadium,Cape Town ,64100.0,64100,1.0
+2010,2010_60,Quarter-final,2010-07-03,Paraguay,Spain,Ellis Park Stadium,Johannesburg ,55359.0,55686,0.9941
+2010,2010_61,Semi-final,2010-07-06,Uruguay,Netherlands,Cape Town Stadium,Cape Town ,62479.0,64100,0.9747
+2010,2010_62,Semi-final,2010-07-07,Germany,Spain,Durban Stadium,Durban ,60960.0,62760,0.9713
+2010,2010_63,Third-place,2010-07-10,Uruguay,Germany,Port Elizabeth Stadium,Nelson Mandela Bay/Port Elizabeth ,36254.0,42486,0.8533
+2010,2010_64,Final,2010-07-11,Netherlands,Spain,Soccer City Stadium,Johannesburg ,84490.0,84490,1.0
