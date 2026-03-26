@@ -111,5 +111,5 @@ See [Website/DEPLOY.md](./Website/DEPLOY.md) for quick deployment notes.
 **Chaitanya Patil**
 
 - GitHub: `https://github.com/chatty21`
-- LinkedIn: add your LinkedIn URL here
+- LinkedIn: https://www.linkedin.com/in/chaitanyapatil21/
 
