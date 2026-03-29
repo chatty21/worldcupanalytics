@@ -1546,6 +1546,34 @@
     line-height: 1.4;
     font-size: .9rem;
   }
+  .source-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .6rem;
+    margin-top: 1rem;
+  }
+  .source-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: .55rem .8rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,.08);
+    background: rgba(255,255,255,.04);
+    color: #d7e2db;
+    text-decoration: none;
+    font-family: 'Space Mono', monospace;
+    font-size: .6rem;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    transition: transform .2s ease, border-color .2s ease, color .2s ease, background .2s ease;
+  }
+  .source-link:hover {
+    transform: translateY(-2px);
+    border-color: rgba(255,212,71,.22);
+    background: rgba(255,212,71,.08);
+    color: var(--gold);
+  }
 
   @media (max-width: 900px) {
     .feature-grid, .clock-row, .profile-grid, .split-grid, .map-shell, .timeline-scrolly, .signal-grid, .spotlight-deck, .simulator-main, .player-spotlight-body, .insight-grid { grid-template-columns: 1fr; }
@@ -2439,6 +2467,31 @@
           <strong>Boolean consistency still needs repair</strong>
           <span>Final-stage rows and related flags should be cleaned in a future dataset revision so filter logic stays fully trustworthy.</span>
         </div>
+      </div>
+    </div>
+
+    <div class="panel" style="margin-top:1.5rem;">
+      <div class="chart-title">Qatar 2022 Context</div>
+      <div class="method-list">
+        <div class="method-item">
+          <strong>Late-pandemic operating environment</strong>
+          <span>Qatar 2022 took place in a still-post-pandemic global environment, with travel and public-health rules being adjusted close to kickoff.</span>
+        </div>
+        <div class="method-item">
+          <strong>What this project can say</strong>
+          <span>The tournament should be interpreted with public-health and travel-policy context in mind, especially when comparing it with earlier editions.</span>
+        </div>
+        <div class="method-item">
+          <strong>What this project does not claim</strong>
+          <span>This dashboard does not attribute 2022 audience changes directly to COVID because the underlying file does not contain market-level, platform-level or causal evidence for that conclusion.</span>
+        </div>
+      </div>
+      <div class="source-links">
+        <a class="source-link" href="https://publications.fifa.com/en/annual-report-2022/tournaments-and-events/fifa-world-cup-qatar-2022/fifa-world-cup-qatar-2022-in-numbers/" target="_blank" rel="noreferrer noopener">FIFA Numbers</a>
+        <a class="source-link" href="https://inside.fifa.com/en/tournaments/mens/worldcup/qatar2022/news/en/news/fifa-world-cup-tm-attendance-figures-stand-at-94-after-first-round-of-group" target="_blank" rel="noreferrer noopener">FIFA Attendance</a>
+        <a class="source-link" href="https://inside.fifa.com/en/media-releases/groundbreaking-facts-and-figures-as-qatar-2022-tm-group-stage-wraps-up" target="_blank" rel="noreferrer noopener">FIFA Group Stage</a>
+        <a class="source-link" href="https://www.aljazeera.com/news/2022/11/1/qatar-eases-covid-restrictions-ahead-of-world-cup" target="_blank" rel="noreferrer noopener">Rule Changes</a>
+        <a class="source-link" href="https://pmc.ncbi.nlm.nih.gov/articles/PMC9719854/" target="_blank" rel="noreferrer noopener">Medical Context</a>
       </div>
     </div>
   </div>
