@@ -1782,6 +1782,8 @@
 
     <div class="insight-grid" id="insightCards"></div>
 
+    <div class="feature-grid" id="executiveInsightCards"></div>
+
     <div class="charts-2col">
       <div class="panel">
         <div class="chart-title">Correlation View — Suspense vs Viewership</div>
@@ -2002,6 +2004,8 @@
         <div class="chart-wrap"><canvas id="chartHostImpact"></canvas></div>
       </div>
     </div>
+
+    <div class="feature-grid" id="forecastInterpretationCards"></div>
 
     <div class="charts-2col" style="margin-top:1.5rem;">
       <div class="panel">
@@ -2404,8 +2408,19 @@
         </div>
       </div>
       <div class="panel">
+        <div class="chart-title">Field Dictionary</div>
+        <div class="method-list" id="fieldDictionaryList"></div>
+      </div>
+    </div>
+
+    <div class="charts-2col" style="margin-top:1.5rem;">
+      <div class="panel">
         <div class="chart-title">Quality Flags</div>
         <div class="feature-grid" style="margin-top:0;" id="qualityFlagCards"></div>
+      </div>
+      <div class="panel">
+        <div class="chart-title">Assumptions</div>
+        <div class="method-list" id="assumptionList"></div>
       </div>
     </div>
 
@@ -2834,6 +2849,37 @@ function renderInsightCards() {
   `).join('');
 }
 
+function renderExecutiveInsightCards() {
+  const root = document.getElementById('executiveInsightCards');
+  if (!root) return;
+
+  const cards = [
+    {
+      label: '2022 Read',
+      value: `+${ADVANCED_SIGNALS.opening2022DeltaPct.toFixed(0)}%`,
+      copy: `2022 produced the weakest average tournament baseline, but its opener massively over-indexed. That points to a more polarized demand pattern rather than broad strength across the full bracket.`,
+    },
+    {
+      label: 'Broadcaster Meaning',
+      value: 'Premium is scarce',
+      copy: `Only about one-third of matches sit in the tentpole inventory tier. Broadcasters should price knockout, host and opener windows as a different product from ordinary group-stage inventory.`,
+    },
+    {
+      label: '2026 Meaning',
+      value: 'Volume over scarcity',
+      copy: `The 2026 tournament likely grows total audience because of match volume, while average viewers per match stay below the tightest modern tournaments. More windows does not mean every window is premium.`,
+    },
+  ];
+
+  root.innerHTML = cards.map(card => `
+    <div class="mini-panel">
+      <div class="mini-label">${card.label}</div>
+      <div class="mini-value">${card.value}</div>
+      <div class="mini-copy">${card.copy}</div>
+    </div>
+  `).join('');
+}
+
 function renderSegmentCards() {
   const root = document.getElementById('segmentCards');
   if (!root) return;
@@ -2843,6 +2889,37 @@ function renderSegmentCards() {
       <div class="mini-label">${segment.name} Inventory</div>
       <div class="mini-value">${segment.count}</div>
       <div class="mini-copy">${formatMillions(segment.avgViewers, 0)} avg viewers • ${segment.knockoutShare.toFixed(0)}% knockout share • ${segment.hostShare.toFixed(0)}% host share</div>
+    </div>
+  `).join('');
+}
+
+function renderForecastInterpretationCards() {
+  const root = document.getElementById('forecastInterpretationCards');
+  if (!root) return;
+
+  const cards = [
+    {
+      label: 'Confidence Band',
+      value: `${SCENARIO_FORECAST[0].total.toFixed(1)}B-${SCENARIO_FORECAST[2].total.toFixed(1)}B`,
+      copy: `The current model brackets 2026 total audience between conservative and aggressive outcomes rather than pretending to know one exact number.`,
+    },
+    {
+      label: 'Base Case',
+      value: `${SCENARIO_FORECAST[1].avg.toFixed(0)}M`,
+      copy: `Base-case per-match demand stays below the tightest 2010-2018 averages, but total audience still rises because the format expands to 104 matches.`,
+    },
+    {
+      label: 'Upside Trigger',
+      value: 'Host + stars',
+      copy: `The strongest upside comes from U.S.-weighted premium windows, marquee teams advancing deep, and high-availability star players sustaining appointment viewing.`,
+    },
+  ];
+
+  root.innerHTML = cards.map(card => `
+    <div class="mini-panel">
+      <div class="mini-label">${card.label}</div>
+      <div class="mini-value">${card.value}</div>
+      <div class="mini-copy">${card.copy}</div>
     </div>
   `).join('');
 }
@@ -2867,9 +2944,49 @@ function renderQualityCards() {
   `).join('');
 }
 
+function renderFieldDictionary() {
+  const root = document.getElementById('fieldDictionaryList');
+  if (!root) return;
+
+  const items = [
+    { title: 'Raw-style', copy: 'year, date, home, away, stadium, city, attendance, capacity, stage, host' },
+    { title: 'Engineered', copy: 'att_ratio, is_host, is_opening, is_final, extra_time, penalties' },
+    { title: 'Modeled', copy: 'viewers, suspense, avg_benchmark, final_benchmark and all 2026 scenario outputs' },
+  ];
+
+  root.innerHTML = items.map(item => `
+    <div class="method-item">
+      <strong>${item.title}</strong>
+      <span>${item.copy}</span>
+    </div>
+  `).join('');
+}
+
+function renderAssumptionList() {
+  const root = document.getElementById('assumptionList');
+  if (!root) return;
+
+  const items = [
+    { title: '2026 format assumption', copy: 'Forecasts assume a 48-team, 104-match tournament with a wider premium inventory ladder.' },
+    { title: 'Signal assumption', copy: 'Match-level 2026 projections use team quality, brand pull, recent form and expected star availability as audience multipliers.' },
+    { title: 'Honesty boundary', copy: 'The dashboard does not claim streaming-share growth, regional growth, or COVID effects because those drivers are not present in the underlying file.' },
+  ];
+
+  root.innerHTML = items.map(item => `
+    <div class="method-item">
+      <strong>${item.title}</strong>
+      <span>${item.copy}</span>
+    </div>
+  `).join('');
+}
+
 renderInsightCards();
+renderExecutiveInsightCards();
 renderSegmentCards();
+renderForecastInterpretationCards();
 renderQualityCards();
+renderFieldDictionary();
+renderAssumptionList();
 
 Chart.defaults.color = '#8a8a8a';
 Chart.defaults.font.family = "'Space Mono', monospace";
