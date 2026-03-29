@@ -503,7 +503,7 @@
 
   nav {
     position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-    padding: .8rem 1.25rem;
+    padding: .75rem 1.15rem;
     background: linear-gradient(180deg, rgba(7,16,11,.96), rgba(7,16,11,.72));
     backdrop-filter: blur(18px);
     border-bottom: 1px solid rgba(255,255,255,0.06);
@@ -511,15 +511,37 @@
     box-shadow: 0 12px 24px rgba(0,0,0,.18);
     gap: 1rem;
   }
+  .nav-brand {
+    display: flex;
+    align-items: center;
+    gap: .8rem;
+    flex: 0 0 auto;
+  }
   .nav-logo {
     font-family: 'Teko', sans-serif;
     font-size: 1.55rem; letter-spacing: .07em; color: var(--white);
     flex: 0 0 auto;
   }
   .nav-logo span { color: var(--gold); }
+  .nav-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: .28rem .55rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255,212,71,.28);
+    background: linear-gradient(90deg, rgba(255,212,71,.12), rgba(255,255,255,.04));
+    color: var(--gold);
+    font-family: 'Space Mono', monospace;
+    font-size: .54rem;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
   .nav-links {
+    position: relative;
     display: flex;
-    gap: .55rem;
+    gap: .42rem;
     list-style: none;
     flex: 1 1 auto;
     justify-content: flex-end;
@@ -527,7 +549,17 @@
     overflow-y: hidden;
     scrollbar-width: none;
     white-space: nowrap;
-    padding-bottom: 2px;
+    padding: .18rem .15rem .2rem 1rem;
+  }
+  .nav-links::before {
+    content: '';
+    position: sticky;
+    left: 0;
+    width: 42px;
+    margin-right: -42px;
+    background: linear-gradient(90deg, rgba(7,16,11,.96), transparent);
+    pointer-events: none;
+    z-index: 1;
   }
   .nav-links::-webkit-scrollbar { display: none; }
   .nav-links li { flex: 0 0 auto; }
@@ -536,24 +568,31 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 34px;
-    padding: .45rem .72rem;
+    min-height: 33px;
+    padding: .44rem .68rem;
     border-radius: 999px;
     border: 1px solid rgba(255,255,255,.06);
-    background: rgba(255,255,255,.025);
-    font-size: .58rem;
-    letter-spacing: .12em;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.015)),
+      rgba(255,255,255,.02);
+    font-size: .54rem;
+    letter-spacing: .14em;
     text-transform: uppercase;
     color: #d2ddd6;
     text-decoration: none;
-    transition: color .2s, opacity .2s, background .2s, border-color .2s;
-    opacity: .82;
+    transition: color .2s, opacity .2s, background .2s, border-color .2s, transform .2s, box-shadow .2s;
+    opacity: .84;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.03);
   }
   .nav-links a:hover {
     color: var(--gold);
     opacity: 1;
-    background: rgba(255,212,71,.08);
+    background:
+      linear-gradient(180deg, rgba(255,212,71,.11), rgba(255,255,255,.03)),
+      rgba(255,212,71,.05);
     border-color: rgba(255,212,71,.2);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 18px rgba(0,0,0,.16);
   }
 
   .panel {
@@ -1596,7 +1635,9 @@
     .hero-aside { width: min(480px, 100%); margin: 0 auto; }
     .hero-ticker { justify-content: center; }
     .section-head { flex-direction: column; align-items: flex-start; }
-    .nav-links { justify-content: flex-start; }
+    .nav-brand { min-width: max-content; }
+    .nav-badge { display: none; }
+    .nav-links { justify-content: flex-start; padding-left: .35rem; }
     .circle-glow { right: 50%; transform: translateX(50%); opacity: .5; }
   }
   @media (max-width: 540px) {
@@ -1609,7 +1650,10 @@
 <body>
 
 <nav>
-  <div class="nav-logo">WORLD<span>CUP</span>.ANALYTICS</div>
+  <div class="nav-brand">
+    <div class="nav-logo">WORLD<span>CUP</span>.ANALYTICS</div>
+    <div class="nav-badge">Matchday Nav</div>
+  </div>
   <ul class="nav-links">
     <li><a href="#overview">Overview</a></li>
     <li><a href="#insights">Insights</a></li>
@@ -1618,8 +1662,8 @@
     <li><a href="#signals">Signals</a></li>
     <li><a href="#teams">Teams</a></li>
     <li><a href="#profiles">Profiles</a></li>
-    <li><a href="#forecast">Forecast</a></li>
-    <li><a href="#simulator">Simulator</a></li>
+    <li><a href="#forecast">2026</a></li>
+    <li><a href="#simulator">Sim Lab</a></li>
     <li><a href="#rivalries">Rivalries</a></li>
     <li><a href="#timeline">Timeline</a></li>
     <li><a href="#map">Map</a></li>
