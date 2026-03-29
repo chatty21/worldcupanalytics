@@ -2449,17 +2449,17 @@
 </footer>
 
 <script>
-const DATA_URL = 'world_cup_master_analytics_2010_2022.json';
-const PLAYER_SPOTLIGHT_URL = 'team_player_spotlights_2026.json';
+const DATA_URL = '/world_cup_master_analytics_2010_2022.json';
+const PLAYER_SPOTLIGHT_URL = '/team_player_spotlights_2026.json';
 
 async function loadWorldCupData() {
   try {
     const [dataResponse, spotlightResponse] = await Promise.all([
-      fetch(DATA_URL),
-      fetch(PLAYER_SPOTLIGHT_URL)
+      fetch(DATA_URL, { cache: 'no-store' }),
+      fetch(PLAYER_SPOTLIGHT_URL, { cache: 'no-store' })
     ]);
-    if (!dataResponse.ok) throw new Error(`Data HTTP ${dataResponse.status}`);
-    if (!spotlightResponse.ok) throw new Error(`Spotlight HTTP ${spotlightResponse.status}`);
+    if (!dataResponse.ok) throw new Error(`Data HTTP ${dataResponse.status} at ${DATA_URL}`);
+    if (!spotlightResponse.ok) throw new Error(`Spotlight HTTP ${spotlightResponse.status} at ${PLAYER_SPOTLIGHT_URL}`);
     const [raw, spotlightDb] = await Promise.all([
       dataResponse.json(),
       spotlightResponse.json()
@@ -2476,7 +2476,7 @@ async function loadWorldCupData() {
     message.style.color = '#f5f1e8';
     message.style.fontFamily = "'Space Mono', monospace";
     message.style.fontSize = '0.8rem';
-    message.innerHTML = 'Data files could not be loaded. Open this page through a local or hosted web server so <code>fetch()</code> can read the local JSON files used by the dashboard.';
+    message.innerHTML = `Data files could not be loaded. Check that <code>${DATA_URL}</code> and <code>${PLAYER_SPOTLIGHT_URL}</code> are being served by Vercel. Error: <strong>${String(error.message || error)}</strong>`;
     document.body.prepend(message);
   }
 }
