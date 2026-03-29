@@ -743,6 +743,56 @@
   .chartjs-tooltip { font-family: 'Space Mono', monospace !important; }
 
   .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 2rem; }
+  .insight-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 2rem; }
+  .insight-card {
+    padding: 1.2rem;
+    border-radius: 20px;
+    background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02));
+    border: 1px solid rgba(255,255,255,.08);
+    position: relative;
+    overflow: hidden;
+  }
+  .insight-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(140deg, rgba(255,212,71,.14), transparent 35%);
+    pointer-events: none;
+  }
+  .insight-card-label {
+    position: relative;
+    z-index: 1;
+    font-family: 'Space Mono', monospace;
+    font-size: .58rem;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: #cfdbd3;
+  }
+  .insight-card-value {
+    position: relative;
+    z-index: 1;
+    font-family: 'Teko', sans-serif;
+    font-size: 3rem;
+    line-height: .9;
+    color: var(--gold);
+    margin-top: .45rem;
+  }
+  .insight-card-title {
+    position: relative;
+    z-index: 1;
+    font-size: 1.08rem;
+    color: var(--white);
+    margin-top: .35rem;
+    font-weight: 600;
+  }
+  .insight-card-copy {
+    position: relative;
+    z-index: 1;
+    color: var(--muted);
+    font-size: .92rem;
+    line-height: 1.45;
+    margin-top: .45rem;
+  }
   .mini-panel {
     padding: 1rem;
     border-radius: 18px;
@@ -1475,9 +1525,30 @@
     font-size: .92rem;
   }
   .profile-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1rem; }
+  .method-list {
+    display: grid;
+    gap: .7rem;
+    margin-top: 1rem;
+  }
+  .method-item {
+    padding: .9rem 1rem;
+    border-radius: 16px;
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.07);
+  }
+  .method-item strong {
+    display: block;
+    color: var(--white);
+    margin-bottom: .2rem;
+  }
+  .method-item span {
+    color: var(--muted);
+    line-height: 1.4;
+    font-size: .9rem;
+  }
 
   @media (max-width: 900px) {
-    .feature-grid, .clock-row, .profile-grid, .split-grid, .map-shell, .timeline-scrolly, .signal-grid, .spotlight-deck, .simulator-main, .player-spotlight-body { grid-template-columns: 1fr; }
+    .feature-grid, .clock-row, .profile-grid, .split-grid, .map-shell, .timeline-scrolly, .signal-grid, .spotlight-deck, .simulator-main, .player-spotlight-body, .insight-grid { grid-template-columns: 1fr; }
     .timeline-item { grid-template-columns: 1fr; }
     .timeline-stat { text-align: left; }
     .timeline-spotlight { position: relative; top: 0; min-height: auto; }
@@ -1513,6 +1584,7 @@
   <div class="nav-logo">WORLD<span>CUP</span>.ANALYTICS</div>
   <ul class="nav-links">
     <li><a href="#overview">Overview</a></li>
+    <li><a href="#insights">Insights</a></li>
     <li><a href="#matches">Matches</a></li>
     <li><a href="#stages">Stages</a></li>
     <li><a href="#signals">Signals</a></li>
@@ -1689,6 +1761,41 @@
         <div class="chart-wrap"><canvas id="chartStageCount"></canvas></div>
       </div>
     </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section id="insights">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-head-copy">
+        <div class="section-label">Analytical Takeaways</div>
+        <h2 class="section-title">What The Data Actually Means</h2>
+        <p class="section-desc">This section translates the tournament table into signal-level interpretation. It highlights the strongest audience drivers, shows where predictive value is real, and makes the dashboard read more like analysis than display.</p>
+      </div>
+      <div class="section-badge">
+        <div class="section-badge-label">Lens</div>
+        <div class="section-badge-value">Explain</div>
+      </div>
+    </div>
+
+    <div class="insight-grid" id="insightCards"></div>
+
+    <div class="charts-2col">
+      <div class="panel">
+        <div class="chart-title">Correlation View — Suspense vs Viewership</div>
+        <div class="chart-wrap"><canvas id="chartSuspenseCorrelation"></canvas></div>
+        <p class="forecast-note">Suspense tracks audience better than attendance fill. That matters because it means premium inventory comes more from perceived stakes than from venue utilization alone.</p>
+      </div>
+      <div class="panel">
+        <div class="chart-title">Match Segmentation Model — Inventory Tiers</div>
+        <div class="chart-wrap"><canvas id="chartMatchSegments"></canvas></div>
+        <p class="forecast-note">This segmentation layer groups matches into baseline, premium and tentpole inventory by blending audience, suspense, stage weight, host lift and opening-match effects.</p>
+      </div>
+    </div>
+
+    <div class="feature-grid" id="segmentCards"></div>
   </div>
 </section>
 
@@ -2245,6 +2352,83 @@
   </div>
 </section>
 
+<div class="divider"></div>
+
+<section id="methodology">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-head-copy">
+        <div class="section-label">Methodology</div>
+        <h2 class="section-title">Source, Cleaning And Assumption Notes</h2>
+        <p class="section-desc">A strong analytics project should show where the data came from, what was cleaned, and what remains modeled or uncertain. This dashboard now makes that separation explicit.</p>
+      </div>
+      <div class="section-badge">
+        <div class="section-badge-label">Trust</div>
+        <div class="section-badge-value">Scoped</div>
+      </div>
+    </div>
+
+    <div class="charts-3col">
+      <div class="panel">
+        <div class="chart-title">Source Layer</div>
+        <div class="method-list">
+          <div class="method-item">
+            <strong>Master dataset</strong>
+            <span>256 match rows spanning 2010, 2014, 2018 and 2022 in a custom JSON master file.</span>
+          </div>
+          <div class="method-item">
+            <strong>Observed-style fields</strong>
+            <span>Year, date, teams, stadium, city, attendance, capacity and stage are the closest thing to raw event descriptors.</span>
+          </div>
+          <div class="method-item">
+            <strong>Modeled fields</strong>
+            <span>Viewers, suspense, benchmark fields and all 2026 projections should be treated as analytical estimates, not official rights-holder measurement.</span>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="chart-title">Cleaning Decisions</div>
+        <div class="method-list">
+          <div class="method-item">
+            <strong>Standardized stages</strong>
+            <span>Stage labels are normalized so cross-year comparisons stay consistent across overview, stage and forecast modules.</span>
+          </div>
+          <div class="method-item">
+            <strong>Derived summaries</strong>
+            <span>Year totals, stage averages, match segmentation and team audience summaries are recalculated directly from the dataset inside the dashboard.</span>
+          </div>
+          <div class="method-item">
+            <strong>Forecast assumptions</strong>
+            <span>2026 views blend historical audience behavior with team quality, popularity, recent form and expected star availability.</span>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="chart-title">Quality Flags</div>
+        <div class="feature-grid" style="margin-top:0;" id="qualityFlagCards"></div>
+      </div>
+    </div>
+
+    <div class="panel" style="margin-top:1.5rem;">
+      <div class="chart-title">Current Caveats</div>
+      <div class="method-list">
+        <div class="method-item">
+          <strong>Attendance quality is not fully clean</strong>
+          <span>Several rows show attendance above stated capacity, which means fill-rate logic should be treated as directional rather than definitive until corrected.</span>
+        </div>
+        <div class="method-item">
+          <strong>Some audience values appear synthetic</strong>
+          <span>Repeated rounded viewer values in blocks suggest formula-generated estimates in parts of the dataset, so this project is best framed as hybrid historical-plus-modeled analytics.</span>
+        </div>
+        <div class="method-item">
+          <strong>Boolean consistency still needs repair</strong>
+          <span>Final-stage rows and related flags should be cleaned in a future dataset revision so filter logic stays fully trustworthy.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <footer>
   DATA SOURCE: World Cup Master Analytics Dataset 2010–2022 &nbsp;·&nbsp; 256 MATCHES &nbsp;·&nbsp; ESTIMATED GLOBAL VIEWERS MODEL
 </footer>
@@ -2430,9 +2614,116 @@ function computeStageEvolution(raw) {
   return { labels, group, semi, final };
 }
 
+function computeCorrelation(xValues, yValues) {
+  const pairs = xValues
+    .map((x, index) => [Number(x), Number(yValues[index])])
+    .filter(([x, y]) => Number.isFinite(x) && Number.isFinite(y));
+
+  if (!pairs.length) return 0;
+
+  const xAvg = pairs.reduce((sum, [x]) => sum + x, 0) / pairs.length;
+  const yAvg = pairs.reduce((sum, [, y]) => sum + y, 0) / pairs.length;
+  const numerator = pairs.reduce((sum, [x, y]) => sum + ((x - xAvg) * (y - yAvg)), 0);
+  const xDenominator = pairs.reduce((sum, [x]) => sum + ((x - xAvg) ** 2), 0);
+  const yDenominator = pairs.reduce((sum, [, y]) => sum + ((y - yAvg) ** 2), 0);
+  const denominator = Math.sqrt(xDenominator * yDenominator);
+
+  return denominator ? numerator / denominator : 0;
+}
+
+function computeAdvancedSignals(raw) {
+  const viewers = raw.map(row => Number(row.viewers) || 0);
+  const baselineAvg = viewers.reduce((sum, value) => sum + value, 0) / viewers.length;
+  const openingRows = raw.filter(row => row.is_opening);
+  const hostRows = raw.filter(row => row.is_host);
+  const nonHostRows = raw.filter(row => !row.is_host);
+  const penaltyRows = raw.filter(row => row.penalties);
+  const normalRows = raw.filter(row => !row.extra_time && !row.penalties);
+  const rows2022 = raw.filter(row => Number(row.year) === 2022);
+  const opening2022 = rows2022.find(row => row.is_opening);
+  const avg2022 = rows2022.reduce((sum, row) => sum + (Number(row.viewers) || 0), 0) / rows2022.length;
+
+  return {
+    openingLiftPct: ((openingRows.reduce((sum, row) => sum + (Number(row.viewers) || 0), 0) / openingRows.length) / baselineAvg - 1) * 100,
+    hostLiftPct: ((hostRows.reduce((sum, row) => sum + (Number(row.viewers) || 0), 0) / hostRows.length) / (nonHostRows.reduce((sum, row) => sum + (Number(row.viewers) || 0), 0) / nonHostRows.length) - 1) * 100,
+    penaltyLiftPct: ((penaltyRows.reduce((sum, row) => sum + (Number(row.viewers) || 0), 0) / penaltyRows.length) / (normalRows.reduce((sum, row) => sum + (Number(row.viewers) || 0), 0) / normalRows.length) - 1) * 100,
+    attendanceCorr: computeCorrelation(raw.map(row => Number(row.att_ratio) || 0), viewers),
+    suspenseCorr: computeCorrelation(raw.map(row => Number(row.suspense) || 0), viewers),
+    opening2022,
+    opening2022DeltaPct: opening2022 ? ((Number(opening2022.viewers) / avg2022) - 1) * 100 : 0,
+  };
+}
+
+function computeMatchSegments(raw) {
+  const stageWeights = {
+    'group stage': 1,
+    'round of 16': 2,
+    'quarter-finals': 3,
+    'semi-finals': 4,
+    'third-place match': 3,
+    'final': 5,
+  };
+
+  const scoredRows = raw.map(row => {
+    const score =
+      ((Number(row.viewers) || 0) * 0.55) +
+      ((Number(row.suspense) || 0) * 120) +
+      ((stageWeights[normalizeStageName(row.stage)] || 1) * 18) +
+      (row.is_host ? 22 : 0) +
+      (row.is_opening ? 28 : 0) +
+      (row.penalties ? 18 : 0);
+    return { row, score };
+  });
+
+  const sortedScores = scoredRows.map(item => item.score).sort((a, b) => a - b);
+  const lowerCut = sortedScores[Math.floor(sortedScores.length / 3)];
+  const upperCut = sortedScores[Math.floor((sortedScores.length * 2) / 3)];
+  const buckets = {
+    Baseline: [],
+    Premium: [],
+    Tentpole: [],
+  };
+
+  scoredRows.forEach(item => {
+    const bucket = item.score < lowerCut ? 'Baseline' : item.score < upperCut ? 'Premium' : 'Tentpole';
+    buckets[bucket].push(item.row);
+  });
+
+  return Object.entries(buckets).map(([name, rows]) => ({
+    name,
+    count: rows.length,
+    avgViewers: rows.reduce((sum, row) => sum + (Number(row.viewers) || 0), 0) / rows.length,
+    hostShare: (rows.filter(row => row.is_host).length / rows.length) * 100,
+    knockoutShare: (rows.filter(row => normalizeStageName(row.stage) !== 'group stage').length / rows.length) * 100,
+  }));
+}
+
+function computeDataQuality(raw) {
+  const capacityIssues = raw.filter(row => Number(row.attendance) > Number(row.capacity)).length;
+  const finalFlagIssues = raw.filter(row => normalizeStageName(row.stage) === 'final' && !row.is_final).length;
+  const repeatedCounts = raw.reduce((map, row) => {
+    const key = Number(Number(row.viewers).toFixed(3));
+    map.set(key, (map.get(key) || 0) + 1);
+    return map;
+  }, new Map());
+  const repeatedValueRows = [...repeatedCounts.values()]
+    .filter(count => count >= 5)
+    .reduce((sum, count) => sum + count, 0);
+
+  return {
+    totalRows: raw.length,
+    capacityIssues,
+    finalFlagIssues,
+    repeatedValueRows,
+  };
+}
+
 const STAGE_SUMMARY = computeStageSummary(RAW);
 const VIEWER_DISTRIBUTION = computeViewerDistribution(RAW);
 const STAGE_EVOLUTION = computeStageEvolution(RAW);
+const ADVANCED_SIGNALS = computeAdvancedSignals(RAW);
+const MATCH_SEGMENTS = computeMatchSegments(RAW);
+const DATA_QUALITY = computeDataQuality(RAW);
 
 const YEAR_CHART_SERIES = {
   years: Object.keys(YEAR_SUMMARY).map(Number).sort((a, b) => a - b),
@@ -2507,6 +2798,78 @@ function renderTopStats() {
 }
 
 renderTopStats();
+
+function renderInsightCards() {
+  const root = document.getElementById('insightCards');
+  if (!root) return;
+
+  const cards = [
+    {
+      label: 'Opening Effect',
+      value: `+${ADVANCED_SIGNALS.openingLiftPct.toFixed(0)}%`,
+      title: 'Openers behave like launch events',
+      copy: `Opening matches run about ${ADVANCED_SIGNALS.openingLiftPct.toFixed(0)}% above the full-tournament baseline, so first-night ceremony and novelty create a real audience premium.`,
+    },
+    {
+      label: 'Host Lift',
+      value: `+${ADVANCED_SIGNALS.hostLiftPct.toFixed(0)}%`,
+      title: 'Host teams are the cleanest repeatable demand engine',
+      copy: `Fixtures involving the host nation average roughly ${ADVANCED_SIGNALS.hostLiftPct.toFixed(0)}% above non-host matches. That is the strongest repeatable driver in the historical file.`,
+    },
+    {
+      label: 'Best Driver',
+      value: `${ADVANCED_SIGNALS.suspenseCorr.toFixed(2)}r`,
+      title: 'Suspense predicts audience better than venue fill',
+      copy: `Suspense correlates with viewership at ${ADVANCED_SIGNALS.suspenseCorr.toFixed(2)} versus ${ADVANCED_SIGNALS.attendanceCorr.toFixed(2)} for attendance fill rate, which is why broadcast value follows stakes more than seats sold.`,
+    },
+  ];
+
+  root.innerHTML = cards.map(card => `
+    <div class="insight-card">
+      <div class="insight-card-label">${card.label}</div>
+      <div class="insight-card-value">${card.value}</div>
+      <div class="insight-card-title">${card.title}</div>
+      <div class="insight-card-copy">${card.copy}</div>
+    </div>
+  `).join('');
+}
+
+function renderSegmentCards() {
+  const root = document.getElementById('segmentCards');
+  if (!root) return;
+
+  root.innerHTML = MATCH_SEGMENTS.map(segment => `
+    <div class="mini-panel">
+      <div class="mini-label">${segment.name} Inventory</div>
+      <div class="mini-value">${segment.count}</div>
+      <div class="mini-copy">${formatMillions(segment.avgViewers, 0)} avg viewers • ${segment.knockoutShare.toFixed(0)}% knockout share • ${segment.hostShare.toFixed(0)}% host share</div>
+    </div>
+  `).join('');
+}
+
+function renderQualityCards() {
+  const root = document.getElementById('qualityFlagCards');
+  if (!root) return;
+
+  const cards = [
+    { label: 'Rows', value: DATA_QUALITY.totalRows, copy: 'Total matches used by the dashboard.' },
+    { label: 'Capacity Issues', value: DATA_QUALITY.capacityIssues, copy: 'Attendance rows above stated capacity.' },
+    { label: 'Final Flag Gaps', value: DATA_QUALITY.finalFlagIssues, copy: 'Final rows where is_final remains false.' },
+    { label: 'Repeated Values', value: DATA_QUALITY.repeatedValueRows, copy: 'Rows inside repeated rounded viewer blocks.' },
+  ];
+
+  root.innerHTML = cards.map(card => `
+    <div class="mini-panel">
+      <div class="mini-label">${card.label}</div>
+      <div class="mini-value">${card.value}</div>
+      <div class="mini-copy">${card.copy}</div>
+    </div>
+  `).join('');
+}
+
+renderInsightCards();
+renderSegmentCards();
+renderQualityCards();
 
 Chart.defaults.color = '#8a8a8a';
 Chart.defaults.font.family = "'Space Mono', monospace";
@@ -2720,6 +3083,87 @@ const STAGE_DATA = {
 function getYearMatches(year) {
   return RAW.filter(m => m.year === year).sort((a,b) => a.match_id.localeCompare(b.match_id));
 }
+
+(function(){
+  const ctx = document.getElementById('chartSuspenseCorrelation').getContext('2d');
+  const stageColor = stage => {
+    const normalized = normalizeStageName(stage);
+    if (normalized === 'final') return GOLD + 'CC';
+    if (normalized === 'semi-finals') return RED + 'BB';
+    if (normalized === 'quarter-finals') return ORANGE + 'BB';
+    if (normalized === 'round of 16') return GREEN + 'BB';
+    return BLUE + '66';
+  };
+
+  new Chart(ctx, {
+    type: 'scatter',
+    data: {
+      datasets: [{
+        data: RAW.map(row => ({ x: Number(row.suspense) || 0, y: Number(row.viewers) || 0 })),
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        pointBackgroundColor: RAW.map(row => stageColor(row.stage)),
+        pointBorderColor: 'rgba(255,255,255,0.32)',
+        pointBorderWidth: 1,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            title: items => {
+              const row = RAW[items[0].dataIndex];
+              return row ? `${row.home} vs ${row.away}` : '';
+            },
+            label: item => {
+              const row = RAW[item.dataIndex];
+              return row ? ` Suspense ${Number(row.suspense).toFixed(2)} • ${Number(row.viewers).toFixed(0)}M • ${row.stage}` : '';
+            }
+          }
+        }
+      },
+      scales: {
+        x: { grid: { color:'rgba(255,255,255,0.05)' }, title: { display: true, text: 'Suspense Index', color: '#8a8a8a' } },
+        y: { grid: { color:'rgba(255,255,255,0.05)' }, ticks: { callback: value => `${value}M` }, title: { display: true, text: 'Global Viewers', color: '#8a8a8a' } }
+      }
+    }
+  });
+})();
+
+(function(){
+  const ctx = document.getElementById('chartMatchSegments').getContext('2d');
+  new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: MATCH_SEGMENTS.map(segment => segment.name),
+      datasets: [{
+        data: MATCH_SEGMENTS.map(segment => segment.count),
+        backgroundColor: [BLUE + 'BB', ORANGE + 'BB', GOLD + 'CC'],
+        borderColor: '#080f09',
+        borderWidth: 2,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '62%',
+      plugins: {
+        legend: { position: 'bottom', labels: { boxWidth: 10, padding: 14 } },
+        tooltip: {
+          callbacks: {
+            label: context => {
+              const segment = MATCH_SEGMENTS[context.dataIndex];
+              return ` ${segment.count} matches • ${formatMillions(segment.avgViewers, 0)} avg viewers`;
+            }
+          }
+        }
+      }
+    }
+  });
+})();
 
 (function(){
   const ctx = document.getElementById('chartTournamentViewers').getContext('2d');
@@ -3399,7 +3843,9 @@ const REVEAL_SELECTOR = [
   '.clock-card',
   '.year-card',
   '.sim-result',
+  '.insight-card',
   '.mini-panel',
+  '.method-item',
   '.profile-card',
   '.signal-card',
   '.profile-chip',
