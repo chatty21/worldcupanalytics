@@ -2983,7 +2983,6 @@ function renderAssumptionList() {
 renderInsightCards();
 renderExecutiveInsightCards();
 renderSegmentCards();
-renderForecastInterpretationCards();
 renderQualityCards();
 renderFieldDictionary();
 renderAssumptionList();
@@ -3065,6 +3064,8 @@ const SCENARIO_FORECAST = [
   { scenario:'Base', total:17.1, avg:164.2, note:'Balanced scenario used across the current dashboard.' },
   { scenario:'Aggressive', total:18.6, avg:178.8, note:'Host-market lift and premium knockout traction outperform baseline.' },
 ];
+renderForecastInterpretationCards();
+
 const HOST_COUNTRY_IMPACT = [
   { host:'United States', matches:78, total:12.9, share:75.6 },
   { host:'Mexico', matches:13, total:2.3, share:13.5 },
