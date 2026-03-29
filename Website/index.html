@@ -1712,6 +1712,7 @@
     <ul class="nav-links">
       <li><a class="nav-link-pill" href="#overview">Overview</a></li>
       <li><a class="nav-link-pill" href="#insights">Insights</a></li>
+      <li><a class="nav-link-pill" href="#business">Business</a></li>
       <li><a class="nav-link-pill" href="#teams">Teams</a></li>
       <li><a class="nav-link-pill" href="#forecast">2026</a></li>
       <li><a class="nav-link-pill" href="#simulator">Sim Lab</a></li>
@@ -1934,6 +1935,68 @@
     </div>
 
     <div class="feature-grid" id="segmentCards"></div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section id="business">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-head-copy">
+        <div class="section-label">Business Takeaways</div>
+        <h2 class="section-title">What This Means For Media And Strategy</h2>
+        <p class="section-desc">The strongest recruiter-facing value in this project is not just finding audience patterns. It is turning those patterns into recommendations for broadcasters, sponsors, and tournament operators.</p>
+      </div>
+      <div class="section-badge">
+        <div class="section-badge-label">Audience</div>
+        <div class="section-badge-value">Decision Makers</div>
+      </div>
+    </div>
+
+    <div class="feature-grid">
+      <div class="panel">
+        <div class="chart-title">For Broadcasters</div>
+        <div class="method-list">
+          <div class="method-item">
+            <strong>Price premium windows differently</strong>
+            <span>Host-nation matches, opening fixtures and knockout drama consistently over-index on audience demand, so they should be treated as premium inventory rather than as ordinary schedule fill.</span>
+          </div>
+          <div class="method-item">
+            <strong>Use the simulator for sales logic</strong>
+            <span>The 2026 model helps identify where star power, team quality and hosting effects justify higher expectations for English-language and Spanish-language reach.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="chart-title">For Advertisers</div>
+        <div class="method-list">
+          <div class="method-item">
+            <strong>Concentrate budget on tentpoles</strong>
+            <span>A relatively small share of matches behaves like global tentpole inventory, so concentrated spend around peak windows is likely more efficient than evenly spreading investment.</span>
+          </div>
+          <div class="method-item">
+            <strong>Align creative with audience mode</strong>
+            <span>Group-stage inventory behaves like broad reach media, while knockout windows behave more like high-attention event television with stronger emotional intensity.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="chart-title">For Tournament Planners</div>
+        <div class="method-list">
+          <div class="method-item">
+            <strong>Expansion adds volume, not equal value</strong>
+            <span>The 2026 format increases total audience opportunity, but the dashboard shows that premium value still concentrates in specific matches, stages and host-market moments.</span>
+          </div>
+          <div class="method-item">
+            <strong>Host-market exposure is commercially meaningful</strong>
+            <span>Host-team matches produce the strongest repeatable audience premium in the file, which supports giving host-market pathways and time windows special commercial attention.</span>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -2495,11 +2558,11 @@
 <div class="divider"></div>
 
 <footer>
-  DATA SOURCE: World Cup Master Analytics Dataset 2010–2022 &nbsp;·&nbsp; 256 MATCHES &nbsp;·&nbsp; ESTIMATED GLOBAL VIEWERS MODEL
+  DATA SOURCE: Cleaned World Cup Master Dataset 2010–2022 &nbsp;·&nbsp; 256 MATCHES &nbsp;·&nbsp; HYBRID HISTORICAL + MODELED VIEWERS
 </footer>
 
 <script>
-const DATA_URL = '/world_cup_master_analytics_2010_2022.json';
+const DATA_URL = '/world_cup_master_cleaned.json';
 const PLAYER_SPOTLIGHT_URL = '/team_player_spotlights_2026.json';
 
 async function loadWorldCupData() {
