@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>World Cup Analytics — Methodology And Notes</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Space+Mono:wght@400;700&family=Teko:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --pitch: #0d2f1b;
+    --pitch-light: #14663a;
+    --gold: #ffd447;
+    --white: #f5f1e8;
+    --muted: #9cb5a7;
+    --panel: rgba(6, 20, 13, 0.84);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background:
+      radial-gradient(circle at top, rgba(25,163,90,0.22), transparent 30%),
+      linear-gradient(180deg, #0b180f 0%, #09120d 24%, #07100b 100%);
+    color: var(--white);
+    font-family: 'Rajdhani', sans-serif;
+  }
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: .8rem 1.25rem;
+    background: linear-gradient(180deg, rgba(7,16,11,.96), rgba(7,16,11,.72));
+    backdrop-filter: blur(18px);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .nav-logo {
+    font-family: 'Teko', sans-serif;
+    font-size: 1.55rem;
+    letter-spacing: .07em;
+  }
+  .nav-logo span { color: var(--gold); }
+  .nav-actions {
+    display: flex;
+    gap: .6rem;
+    flex-wrap: wrap;
+  }
+  .nav-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 34px;
+    padding: .45rem .8rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,.08);
+    background: rgba(255,255,255,.03);
+    color: #d2ddd6;
+    text-decoration: none;
+    font-family: 'Space Mono', monospace;
+    font-size: .6rem;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+  }
+  .nav-link:hover {
+    color: var(--gold);
+    border-color: rgba(255,212,71,.2);
+    background: rgba(255,212,71,.08);
+  }
+  .hero {
+    padding: 5.5rem 2rem 2rem;
+  }
+  .container {
+    width: min(1180px, 100%);
+    margin: 0 auto;
+  }
+  .hero-card, .panel {
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01)),
+      var(--panel);
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 24px;
+    padding: 1.4rem;
+    box-shadow: 0 18px 40px rgba(0,0,0,.2);
+  }
+  .section {
+    padding: 0 2rem 2rem;
+  }
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: .68rem;
+    letter-spacing: .24em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: .75rem;
+  }
+  h1, h2 {
+    font-family: 'Teko', sans-serif;
+    line-height: .92;
+    letter-spacing: .04em;
+  }
+  h1 { font-size: clamp(3.5rem, 10vw, 6rem); }
+  h2 { font-size: clamp(2.3rem, 5vw, 3.8rem); margin-bottom: .5rem; }
+  .lead, .section-desc {
+    color: #c8d6ce;
+    line-height: 1.5;
+    font-size: 1rem;
+    max-width: 820px;
+  }
+  .grid-3, .grid-2, .feature-grid {
+    display: grid;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+  .grid-3, .feature-grid { grid-template-columns: repeat(3, 1fr); }
+  .grid-2 { grid-template-columns: repeat(2, 1fr); }
+  .card-title {
+    font-family: 'Space Mono', monospace;
+    font-size: .64rem;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: #cfdbd3;
+    margin-bottom: .9rem;
+  }
+  .method-list {
+    display: grid;
+    gap: .7rem;
+  }
+  .method-item {
+    padding: .9rem 1rem;
+    border-radius: 16px;
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.07);
+  }
+  .method-item strong {
+    display: block;
+    margin-bottom: .2rem;
+    color: var(--white);
+  }
+  .method-item span {
+    color: var(--muted);
+    line-height: 1.45;
+  }
+  .mini-panel {
+    padding: 1rem;
+    border-radius: 18px;
+    background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+    border: 1px solid rgba(255,255,255,.08);
+  }
+  .mini-label {
+    font-family: 'Space Mono', monospace;
+    font-size: .58rem;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: #cfdbd3;
+    margin-bottom: .35rem;
+  }
+  .mini-value {
+    font-family: 'Teko', sans-serif;
+    font-size: 2rem;
+    line-height: .92;
+    color: var(--gold);
+  }
+  .mini-copy {
+    color: var(--muted);
+    font-size: .9rem;
+    line-height: 1.45;
+    margin-top: .35rem;
+  }
+  .source-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .6rem;
+    margin-top: 1rem;
+  }
+  .source-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: .55rem .8rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,.08);
+    background: rgba(255,255,255,.04);
+    color: #d7e2db;
+    text-decoration: none;
+    font-family: 'Space Mono', monospace;
+    font-size: .6rem;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+  }
+  .source-link:hover {
+    color: var(--gold);
+    border-color: rgba(255,212,71,.22);
+    background: rgba(255,212,71,.08);
+  }
+  @media (max-width: 900px) {
+    .grid-3, .grid-2, .feature-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+  <nav>
+    <div class="nav-logo">WORLD<span>CUP</span>.ANALYTICS</div>
+    <div class="nav-actions">
+      <a class="nav-link" href="/">Back To Dashboard</a>
+    </div>
+  </nav>
+
+  <div class="hero">
+    <div class="container">
+      <div class="hero-card">
+        <div class="section-label">Methodology</div>
+        <h1>Source, Cleaning And Assumption Notes</h1>
+        <p class="lead">This page holds the detailed notes behind the dashboard so the main experience stays focused on analytics and storytelling. It clarifies what is raw-style metadata, what is engineered, what is modeled, and where the current dataset still needs cleanup.</p>
+      </div>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+      <div class="grid-3">
+        <div class="panel">
+          <div class="card-title">Source Layer</div>
+          <div class="method-list">
+            <div class="method-item">
+              <strong>Master dataset</strong>
+              <span>256 match rows spanning 2010, 2014, 2018 and 2022 in a custom JSON master file.</span>
+            </div>
+            <div class="method-item">
+              <strong>Observed-style fields</strong>
+              <span>Year, date, teams, stadium, city, attendance, capacity and stage are treated as the closest thing to raw event descriptors.</span>
+            </div>
+            <div class="method-item">
+              <strong>Modeled fields</strong>
+              <span>Viewers, suspense, benchmark fields and all 2026 projections should be read as analytical estimates, not official rights-holder measurement.</span>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="card-title">Cleaning Decisions</div>
+          <div class="method-list">
+            <div class="method-item">
+              <strong>Standardized stages</strong>
+              <span>Stage labels are normalized so cross-year comparisons stay consistent across overview, stage and forecast modules.</span>
+            </div>
+            <div class="method-item">
+              <strong>Derived summaries</strong>
+              <span>Year totals, stage averages, segmentation and team audience summaries are recalculated directly from the dataset inside the dashboard.</span>
+            </div>
+            <div class="method-item">
+              <strong>Forecast assumptions</strong>
+              <span>2026 views blend historical audience behavior with team quality, popularity, recent form and expected star availability.</span>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="card-title">Field Dictionary</div>
+          <div class="method-list">
+            <div class="method-item">
+              <strong>Raw-style</strong>
+              <span>year, date, home, away, stadium, city, attendance, capacity, stage, host</span>
+            </div>
+            <div class="method-item">
+              <strong>Engineered</strong>
+              <span>att_ratio, is_host, is_opening, is_final, extra_time, penalties</span>
+            </div>
+            <div class="method-item">
+              <strong>Modeled</strong>
+              <span>viewers, suspense, avg_benchmark, final_benchmark and all 2026 scenario outputs</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="grid-2">
+        <div class="panel">
+          <div class="card-title">Quality Flags</div>
+          <div class="feature-grid">
+            <div class="mini-panel">
+              <div class="mini-label">Rows</div>
+              <div class="mini-value">256</div>
+              <div class="mini-copy">Total matches used by the dashboard.</div>
+            </div>
+            <div class="mini-panel">
+              <div class="mini-label">Capacity Issues</div>
+              <div class="mini-value">41</div>
+              <div class="mini-copy">Attendance rows above stated capacity.</div>
+            </div>
+            <div class="mini-panel">
+              <div class="mini-label">Final Flag Gaps</div>
+              <div class="mini-value">4</div>
+              <div class="mini-copy">Final rows where <code>is_final</code> remains false.</div>
+            </div>
+            <div class="mini-panel">
+              <div class="mini-label">Repeated Values</div>
+              <div class="mini-value">50</div>
+              <div class="mini-copy">Rows inside repeated rounded viewer-value blocks.</div>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="card-title">Assumptions</div>
+          <div class="method-list">
+            <div class="method-item">
+              <strong>2026 format assumption</strong>
+              <span>Forecasts assume a 48-team, 104-match tournament with a wider premium inventory ladder.</span>
+            </div>
+            <div class="method-item">
+              <strong>Signal assumption</strong>
+              <span>Match-level 2026 projections use team quality, brand pull, recent form and expected star availability as audience multipliers.</span>
+            </div>
+            <div class="method-item">
+              <strong>Honesty boundary</strong>
+              <span>The project does not claim streaming-share growth, regional growth, or COVID audience causality because those drivers are not present in the underlying file.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="grid-2">
+        <div class="panel">
+          <div class="card-title">Current Caveats</div>
+          <div class="method-list">
+            <div class="method-item">
+              <strong>Attendance quality is not fully clean</strong>
+              <span>Several rows show attendance above stated capacity, which means fill-rate logic should be treated as directional rather than definitive until corrected.</span>
+            </div>
+            <div class="method-item">
+              <strong>Some audience values appear synthetic</strong>
+              <span>Repeated rounded viewer values in blocks suggest formula-generated estimates in parts of the dataset, so the project is best framed as hybrid historical-plus-modeled analytics.</span>
+            </div>
+            <div class="method-item">
+              <strong>Boolean consistency still needs repair</strong>
+              <span>Final-stage rows and related flags should be cleaned in a future dataset revision so filter logic stays fully trustworthy.</span>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="card-title">Qatar 2022 Context</div>
+          <div class="method-list">
+            <div class="method-item">
+              <strong>Late-pandemic operating environment</strong>
+              <span>Qatar 2022 took place in a still-post-pandemic global environment, with travel and public-health rules being adjusted close to kickoff.</span>
+            </div>
+            <div class="method-item">
+              <strong>What this project can say</strong>
+              <span>The tournament should be interpreted with public-health and travel-policy context in mind, especially when comparing it with earlier editions.</span>
+            </div>
+            <div class="method-item">
+              <strong>What this project does not claim</strong>
+              <span>This dashboard does not attribute 2022 audience changes directly to COVID because the underlying file does not contain market-level, platform-level or causal evidence for that conclusion.</span>
+            </div>
+          </div>
+          <div class="source-links">
+            <a class="source-link" href="https://publications.fifa.com/en/annual-report-2022/tournaments-and-events/fifa-world-cup-qatar-2022/fifa-world-cup-qatar-2022-in-numbers/" target="_blank" rel="noreferrer noopener">FIFA Numbers</a>
+            <a class="source-link" href="https://inside.fifa.com/en/tournaments/mens/worldcup/qatar2022/news/en/news/fifa-world-cup-tm-attendance-figures-stand-at-94-after-first-round-of-group" target="_blank" rel="noreferrer noopener">FIFA Attendance</a>
+            <a class="source-link" href="https://inside.fifa.com/en/media-releases/groundbreaking-facts-and-figures-as-qatar-2022-tm-group-stage-wraps-up" target="_blank" rel="noreferrer noopener">FIFA Group Stage</a>
+            <a class="source-link" href="https://www.aljazeera.com/news/2022/11/1/qatar-eases-covid-restrictions-ahead-of-world-cup" target="_blank" rel="noreferrer noopener">Rule Changes</a>
+            <a class="source-link" href="https://pmc.ncbi.nlm.nih.gov/articles/PMC9719854/" target="_blank" rel="noreferrer noopener">Medical Context</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</body>
+</html>
